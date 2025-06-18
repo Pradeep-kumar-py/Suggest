@@ -1,0 +1,1 @@
+export const API_BASE_URLS: string = "https://suggest-backend.azurewebsites.net"
