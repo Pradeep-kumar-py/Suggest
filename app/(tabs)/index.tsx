@@ -132,12 +132,12 @@ export default function Index() {
           />
           <Text className="capitalize font-bold text-textPrimary text-xl ml-3 " >{item.user?.name}</Text>
         </View>
-        <Link href={{
+        {/* <Link href={{
           pathname: "/page/[id]",
           params: { id: item._id, title: item.title }
-        }} >
+        }} > */}
           <BookCardImage item={item} />
-        </Link>
+        {/* </Link> */}
         <View className='relative flex-row items-center justify-between ' >
           <View className=' flex-1 gap-1 ml-4 ' >
             <Text className="text-textDark font-bold text-2xl capitalize">{item.title}</Text>

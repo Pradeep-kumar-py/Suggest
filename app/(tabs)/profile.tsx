@@ -5,7 +5,7 @@ import { Image } from 'expo-image'
 import { useAuthStore } from '@/store/authStore'
 import { FontAwesome6, Ionicons, MaterialIcons } from '@expo/vector-icons';
 import { clearSecureStore } from '@/utils/secureStore'
-import { useRouter } from 'expo-router'
+import { Link, useRouter } from 'expo-router'
 import { fetchWithAuth } from '@/utils/refreshAccessToken'
 import { UserBookType } from '@/utils/types'
 import * as ImagePicker from 'expo-image-picker';
@@ -263,21 +263,28 @@ const Profile = () => {
   const renderBookCard = ({ item }: { item: UserBookType }) => {
     return (
       <View className=" relative flex-row bg-cardBackground p-3 rounded-lg shadow-md mb-4 mx-5">
-        <View className='flex items-center justify-center' >
-          <Image
-            source={
-              item?.image
-                ? { uri: item.image }
-                : require('../../assets/photos/bookimg.jpeg')
-            }
-            style={{
-              width: '100%',
-              height: 130,
-              aspectRatio: 1,
-              borderRadius: 10,
-            }}
-          />
-        </View>
+        <Link
+          href={{
+            pathname: "/page/[id]",
+            params: { id: item._id, title: item.title }
+          }}
+        >
+          <View className='flex items-center justify-center' >
+            <Image
+              source={
+                item?.image
+                  ? { uri: item.image }
+                  : require('../../assets/photos/bookimg.jpeg')
+              }
+              style={{
+                width: '100%',
+                height: 130,
+                aspectRatio: 1,
+                borderRadius: 10,
+              }}
+            />
+          </View>
+        </Link>
         <View className=' flex-1 relative flex-row items-center justify-between ' >
           <View className=' flex-1 gap-1 ml-4 ' >
             <Text className="text-textDark font-bold text-2xl capitalize">{item.title}</Text>

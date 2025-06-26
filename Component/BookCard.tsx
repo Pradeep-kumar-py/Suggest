@@ -3,15 +3,16 @@ import { View } from 'react-native';
 import { Image } from 'expo-image';
 import { Dimensions } from 'react-native';
 import { useVideoPlayer, VideoView } from 'expo-video';
-
+import { BookType } from "@/utils/types";
+import { Link } from 'expo-router';
 const screenWidth = Dimensions.get('window').width;
 
-type BookType = {
-    image: string;
-};
 
-export const BookCardImage = ({ item, shouldPlay = false, muted = true }: { item: BookType, shouldPlay?: boolean, muted?: boolean }) => {
-    const [AspectRatio, setAspectRatio] = useState<number>(.5); // Default aspect ratio, can be adjusted based on your needs
+
+export const BookCardImage = ({ item, shouldPlay = false }: { item: BookType, shouldPlay?: boolean, muted?: boolean }) => {
+
+
+    const [AspectRatio, setAspectRatio] = useState<number>(.7); // Default aspect ratio, can be adjusted based on your needs
     const [mediaType, setMediaType] = useState<'image' | 'video' | undefined>(undefined);
 
     const handleImageLoad = (event: { source: { width: number; height: number } }) => {
@@ -31,9 +32,8 @@ export const BookCardImage = ({ item, shouldPlay = false, muted = true }: { item
         } else {
             player.pause();
         }
-        player.muted = muted;
 
-        
+
     });
 
     // FIX: Use useEffect to set mediaType
@@ -52,28 +52,29 @@ export const BookCardImage = ({ item, shouldPlay = false, muted = true }: { item
             } else {
                 player.pause();
             }
-            player.muted = muted;
-        }
-    }, [shouldPlay, muted, mediaType]);
 
-    useEffect(() => {
-        if (mediaType === 'video' && player?.videoTrack) {
-            // console.log("Player status: ", player.stopObserving);
-            // console.log("Player video track size ", player.subtitleTrack );
-            
-            
-            const { height, width } = player.videoTrack.size as any; 
-            // console.log("Video Width: ", width, " Video Height: ", height);
-            if (width > 0 && height > 0) {
-                setAspectRatio(width / height);
-                // console.log("Aspect Ratio from video : ", AspectRatio);/
-            }
         }
-    }, [mediaType, player?.videoTrack]); 
+    }, [shouldPlay, mediaType]);
+
+    // useEffect(() => {
+    //     if (mediaType === 'video' && player?.videoTrack) {
+    //         // console.log("Player status: ", player.stopObserving);
+    //         // console.log("Player video track size ", player.subtitleTrack );
+
+
+    //         const { height, width } = player.videoTrack.size as any; 
+    //         // console.log("Video Width: ", width, " Video Height: ", height);
+    //         if (width > 0 && height > 0) {
+    //             setAspectRatio(width / height);
+    //             // console.log("Aspect Ratio from video : ", AspectRatio);/
+    //         }
+    //     }
+    // }, [mediaType, player?.videoTrack]); 
 
 
 
     return (
+
         <View style={{ margin: 4 }}>
             {mediaType === 'video' ? (
                 <VideoView
@@ -88,19 +89,28 @@ export const BookCardImage = ({ item, shouldPlay = false, muted = true }: { item
 
                 />
             ) : (
-                <Image
-                    source={{ uri: item.image }}
-                    style={{
-                        width: '100%',
-                        // height: imageHeight,
-                        aspectRatio: AspectRatio,
-                        borderRadius: 10,
-
-
+                <Link
+                    href={{
+                        pathname: '/page/[id]',
+                        params: { id: item._id },
                     }}
-                    contentFit="contain"
-                    onLoad={handleImageLoad}
-                />
+                >
+                    <View>
+                        <Image
+                            source={{ uri: item.image }}
+                            style={{
+                                width: '100%',
+                                // height: imageHeight,
+                                aspectRatio: AspectRatio,
+                                borderRadius: 10,
+
+
+                            }}
+                            contentFit="contain"
+                            onLoad={handleImageLoad}
+                        />
+                    </View>
+                </Link>
             )}
         </View>
     );
