@@ -47,7 +47,7 @@ const ComponentPage = () => {
 
 
     return (
-        <SafeAreaView style={styles.cardBackground} className=" relative flex p-3 rounded-lg shadow-md mb-4 mx-5">
+        <SafeAreaView style={styles.cardBackground} className=" relative flex-1 p-3 rounded-lg shadow-md my-4 mx-5">
             <View className="flex-row  items-center   " >
                 <Image
                     source={
