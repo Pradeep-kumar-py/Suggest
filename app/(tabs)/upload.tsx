@@ -11,6 +11,7 @@ import { MotiPressable } from 'moti/interactions'
 import { AnimatedButton } from '@/Component/AnimatedButton';
 import { useVideoPlayer, VideoView } from 'expo-video';
 import { useEvent } from 'expo';
+import { Picker } from '@react-native-picker/picker';
 
 
 const Upload = () => {
@@ -23,9 +24,16 @@ const Upload = () => {
   const [selectedMediaUri, setSelectedMediaUri] = useState<string | undefined>(undefined);
   const [imageDimensions, setImageDimensions] = useState<{ width: number; height: number } | null>(null)
   const [mediaType, setMediaType] = useState<'image' | 'video' | undefined>(undefined);
+  const [genre, setGenre] = useState('')
+  const [availableGenres, setAvailableGenres] = useState<string[]>([])
 
   const { uploadBook, isLoading } = useAuthStore()
 
+  const genres = [
+    'Fiction', 'Non-Fiction', 'Technology', 'Science', 'Biography',
+    'History', 'Self-Help', 'Business', 'Programming', 'Design',
+    'Cooking', 'Travel', 'Health', 'Philosophy', 'Education'
+  ]
 
 
   const pickImageAsync = async () => {
@@ -63,7 +71,7 @@ const Upload = () => {
   };
 
   const handleSubmit = async () => {
-    if (!title || !caption || !rating) {
+    if (!title || !caption || !rating || !genre) {
       alert("Please fill in all fields")
       return
     }
@@ -80,14 +88,7 @@ const Upload = () => {
     formData.append('caption', caption);
     formData.append('rating', rating.toString());
     formData.append('link', link);
-
-    console.log("Form Data: ",
-      formData.get('file'),
-      formData.get('title'),
-      formData.get('caption'),
-      formData.get('rating'),
-      formData.get('link')
-    );
+    formData.append('genre', genre); // Add genre to form data
 
     try {
       const result = await uploadBook(formData);
@@ -100,6 +101,7 @@ const Upload = () => {
         setRating(0);
         setLink('');
         setMediaFile(null);
+        setGenre('');
         setSelectedMediaUri(undefined);
       } else {
         console.error("Upload failed123: ", result.message);
@@ -169,6 +171,21 @@ const Upload = () => {
                         />
                       </Pressable >
                     ))}
+                  </View>
+                </View>
+                <View className="w-full mb-4">
+                  <Text className='text-textPrimary font-semibold mb-1'>Genre/Category</Text>
+                  <View className="border-[1px] border-border rounded-lg ">
+                    <Picker
+                      selectedValue={genre}
+                      onValueChange={setGenre}
+                      style={{ color: '#767676' }}
+                    >
+                      <Picker.Item label="Select a genre..." value="" />
+                      {genres.map((g) => (
+                        <Picker.Item key={g} label={g} value={g} />
+                      ))}
+                    </Picker>
                   </View>
                 </View>
                 <View className="w-full mb-4 relative">

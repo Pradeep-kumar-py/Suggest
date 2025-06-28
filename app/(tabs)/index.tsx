@@ -1,8 +1,8 @@
-import { ActivityIndicator, ViewToken, Alert, FlatList, Linking, Pressable, Text, View, StyleSheet } from "react-native";
+import { ActivityIndicator, ViewToken, Alert, Linking, Pressable, Text, View, StyleSheet } from "react-native";
 import { Link, useRouter } from "expo-router";
 import { Entypo, Ionicons, MaterialIcons } from '@expo/vector-icons';
 import { SafeAreaView } from "react-native-safe-area-context";
-import React, { useEffect, useState } from "react";
+import React, { useCallback, useEffect, useState } from "react";
 import { useAuthStore } from "@/store/authStore";
 import { BookType } from "@/utils/types";
 import { Image } from "expo-image";
@@ -11,8 +11,9 @@ import { getRefreshToken, isTokenExpired } from "@/utils/secureStore";
 import { StatusBar } from "expo-status-bar";
 import { BookCardImage } from "@/Component/BookCard";
 import ShowMoreText from "@/Component/ShowMoreText"
-
-
+import { FlashList } from "@shopify/flash-list";
+import { useVideoPlayerStore } from "@/store/playerStore";
+import BookFilter from '@/Component/BookFilter';
 
 export default function Index() {
 
@@ -22,17 +23,18 @@ export default function Index() {
   const [isRefreshing, setIsRefreshing] = useState(false)
   const [isInitialLoading, setIsInitialLoading] = useState(true)
   const [isLoadingMore, setisLoadingMore] = useState(false)
-  const [calculatedHeight, setCalculatedHeight] = useState(0)
-  const [visibleVideoIndex, setVisibleVideoIndex] = useState<number | null>(null);
+  const [visibleItems, setVisibleItems] = useState<string[]>([]);
+  const [selectedGenre, setSelectedGenre] = useState('')
 
 
   // console.log("Books: ", Books)
 
   const router = useRouter()
 
-
-  const { fetchAllBooks, isLoading } = useAuthStore()
+  const { pauseAllVideos } = useVideoPlayerStore();
+  const { fetchAllBooks, fetchBooksByGenre, isLoading } = useAuthStore()
   const limit = 5 // Number of books to fetch per page
+
 
   useEffect(() => {
     (async () => {
@@ -104,13 +106,58 @@ export default function Index() {
     }
   }
 
+  // Handle viewability changes
+  const onViewableItemsChanged = useCallback(({ viewableItems }: { viewableItems: ViewToken[] }) => {
+    const visibleIds = viewableItems.map(item => item.item._id);
+    setVisibleItems(visibleIds);
 
+    // Pause all videos when scrolling fast or when no items are visible
+    if (visibleIds.length === 0) {
+      pauseAllVideos();
+    }
+  }, [pauseAllVideos]);
+
+  const viewabilityConfig = {
+    itemVisiblePercentThreshold: 50, // Item must be 50% visible
+  };
+
+
+
+  //   const loadBooks = async (page: number, limit: number, genre: string = '') => {
+  //   if (genre) {
+  //     return await fetchBooksByGenre(genre, page, limit)
+  //   } else {
+  //     return await fetchAllBooks(page, limit)
+  //   }
+  // }
+
+  // const handleFilterChange = async (genre: string) => {
+  //   setSelectedGenre(genre)
+  //   setIsInitialLoading(true)
+  //   setBooks([])
+
+  //   const result = await loadBooks(1, limit, genre)
+  //   if (result.success) {
+  //     setBooks([...result.data.books])
+  //     setHasMore(result.data.totalPages > 1)
+  //     setPageNo(1)
+  //     setIsInitialLoading(false)
+  //   } else {
+  //     console.log("Error fetching filtered books: ", result.message)
+  //     setIsInitialLoading(false)
+  //   }
+  // }\
+
+  // const handleFilterChange = async (genre: string) => {
+  //   console.log("print hii from filter change")
+  // }
 
 
 
 
 
   const renderBookCard = ({ item }: { item: BookType }) => {
+    const isVisible = visibleItems.includes(item._id);
 
     return (
       <View style={styles.cardBackground} className=" relative flex p-3 rounded-lg shadow-md mb-4 mx-5">
@@ -136,7 +183,7 @@ export default function Index() {
           pathname: "/page/[id]",
           params: { id: item._id, title: item.title }
         }} > */}
-          <BookCardImage item={item} />
+        <BookCardImage item={item} shouldPlay={isVisible} />
         {/* </Link> */}
         <View className='relative flex-row items-center justify-between ' >
           <View className=' flex-1 gap-1 ml-4 ' >
@@ -178,7 +225,7 @@ export default function Index() {
 
 
 
-  // const renderBookCard = ({ item }: { item: BookType }) => <BookCard item={item} />;
+
 
 
 
@@ -195,7 +242,7 @@ export default function Index() {
               <ActivityIndicator size="large" color="#1976D2" />
             </View>
           ) : (
-            <FlatList
+            <FlashList
               data={Books}
               renderItem={renderBookCard}
               keyExtractor={item => item._id}
@@ -205,6 +252,8 @@ export default function Index() {
               contentContainerStyle={{ paddingBottom: 16 }}
               onRefresh={handleRefresh}
               refreshing={isRefreshing}
+              onViewableItemsChanged={onViewableItemsChanged}
+              viewabilityConfig={viewabilityConfig}
               ListFooterComponent={
                 isLoadingMore ? () => (
                   <View style={{ paddingVertical: 16, alignItems: 'center' }}>
@@ -231,6 +280,10 @@ export default function Index() {
                     <Text className='text-textPrimary text-5xl' >Suggest 📚 </Text>
                     <Text>Discover great Learning from community 👇 </Text>
                   </View>
+                  {/* <BookFilter
+                    onFilterChange={handleFilterChange}
+                    selectedGenre={selectedGenre}
+                  /> */}
                 </View>
               )}
             />

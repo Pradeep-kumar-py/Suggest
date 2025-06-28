@@ -1,4 +1,4 @@
-import { View, Text, Pressable, ScrollView, FlatList, Alert, ActivityIndicator, Linking } from 'react-native'
+import { View, Text, Pressable, ScrollView, Alert, ActivityIndicator, Linking } from 'react-native'
 import React, { useEffect, useState } from 'react'
 import { SafeAreaView } from 'react-native-safe-area-context'
 import { Image } from 'expo-image'
@@ -10,6 +10,7 @@ import { fetchWithAuth } from '@/utils/refreshAccessToken'
 import { UserBookType } from '@/utils/types'
 import * as ImagePicker from 'expo-image-picker';
 import { StatusBar } from 'expo-status-bar'
+import { FlashList } from "@shopify/flash-list";
 
 const Profile = () => {
 
@@ -378,7 +379,7 @@ const Profile = () => {
               <ActivityIndicator size="large" color="#1976D2" />
             </View>
           ) : (
-            <FlatList
+            <FlashList
               data={Books}
               renderItem={renderBookCard}
               keyExtractor={item => item._id}

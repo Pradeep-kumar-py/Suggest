@@ -25,7 +25,7 @@ export interface UserBookType {
     user:string,
     link: string,
     createdAt: string,
-    
+    genre: string
 }
 
 interface UserType {
@@ -43,6 +43,7 @@ export interface BookType {
     user?:UserType,
     link: string,
     createdAt: string,
+    genre: string
 }
 
 export type DeepLinkEvent = {

@@ -1,19 +1,30 @@
 import React, { useEffect, useState } from 'react';
-import { View } from 'react-native';
+import { View, Text, Pressable } from 'react-native';
 import { Image } from 'expo-image';
 import { Dimensions } from 'react-native';
 import { useVideoPlayer, VideoView } from 'expo-video';
 import { BookType } from "@/utils/types";
 import { Link } from 'expo-router';
+import { useVideoPlayerStore } from '@/store/playerStore';
 const screenWidth = Dimensions.get('window').width;
-
 
 
 export const BookCardImage = ({ item, shouldPlay = false }: { item: BookType, shouldPlay?: boolean, muted?: boolean }) => {
 
 
-    const [AspectRatio, setAspectRatio] = useState<number>(.7); // Default aspect ratio, can be adjusted based on your needs
+    const [AspectRatio, setAspectRatio] = useState<number>(.65); // Default aspect ratio, can be adjusted based on your needs
     const [mediaType, setMediaType] = useState<'image' | 'video' | undefined>(undefined);
+    const [isPlaying, setIsPlaying] = useState(false);
+
+    const {
+        currentPlayingId,
+        setCurrentPlayingId,
+        registerPlayer,
+        unregisterPlayer
+    } = useVideoPlayerStore();
+
+    const mediaUri = item.image;
+    const videoId = `video-${item._id}`;
 
     const handleImageLoad = (event: { source: { width: number; height: number } }) => {
         const { width, height } = event.source;
@@ -22,17 +33,11 @@ export const BookCardImage = ({ item, shouldPlay = false }: { item: BookType, sh
         }
     };
 
-    const mediaUri = item.image;
+
 
 
     const player = useVideoPlayer(mediaUri, (player) => {
         player.loop = true;
-        if (shouldPlay) {
-            player.play();
-        } else {
-            player.pause();
-        }
-
 
     });
 
@@ -45,16 +50,33 @@ export const BookCardImage = ({ item, shouldPlay = false }: { item: BookType, sh
         }
     }, [mediaUri]);
 
+
+    useEffect(() => {
+        if (mediaType === 'video' && player) {
+            registerPlayer(videoId, player);
+
+            return () => {
+                unregisterPlayer(videoId);
+            };
+        }
+    }, [mediaType, player, videoId]);
+
+
+    // Handle play/pause based on current playing video
     useEffect(() => {
         if (mediaType === 'video') {
-            if (shouldPlay) {
-                player.play();
-            } else {
-                player.pause();
-            }
+            const shouldThisVideoPlay = currentPlayingId === videoId;
 
+            if (shouldThisVideoPlay && !isPlaying) {
+                player.play();
+                setIsPlaying(true);
+            } else if (!shouldThisVideoPlay && isPlaying) {
+                player.pause();
+                setIsPlaying(false);
+            }
         }
-    }, [shouldPlay, mediaType]);
+    }, [currentPlayingId, videoId, mediaType, isPlaying]);
+
 
     // useEffect(() => {
     //     if (mediaType === 'video' && player?.videoTrack) {
@@ -77,17 +99,15 @@ export const BookCardImage = ({ item, shouldPlay = false }: { item: BookType, sh
 
         <View style={{ margin: 4 }}>
             {mediaType === 'video' ? (
-                <VideoView
-                    player={player}
-                    style={{
-                        width: '100%',
-                        aspectRatio: AspectRatio,
-                        borderRadius: 10,
-                        // alignSelf: 'center',
-                    }}
-                    contentFit="contain"
-
-                />
+                    <VideoView
+                        player={player}
+                        style={{
+                            width: '100%',
+                            aspectRatio: AspectRatio,
+                            borderRadius: 10,
+                        }}
+                        contentFit="contain"
+                    />
             ) : (
                 <Link
                     href={{
