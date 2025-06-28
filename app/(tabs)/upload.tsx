@@ -238,7 +238,7 @@ const Upload = () => {
                     ) : (
                       <View className="flex items-center justify-center h-64 w-full">
                         <Ionicons name="image-outline" size={50} color="#1976D2" />
-                        <Text className="text-textSecondary text-sm">Tap to select an image</Text>
+                        <Text className="text-textSecondary text-sm">📷 Photo or 🎥 Video • Under 20MB</Text>
                       </View>
                     )}
                   </Pressable>

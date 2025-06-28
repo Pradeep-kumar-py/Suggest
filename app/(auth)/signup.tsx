@@ -1,4 +1,4 @@
-import { View, Text, Image, TextInput, KeyboardAvoidingView, Pressable, Alert } from 'react-native'
+import { View, Text, Image, TextInput, KeyboardAvoidingView, Pressable, Alert, Platform } from 'react-native'
 import React, { useState } from 'react'
 import { Link, useRouter } from 'expo-router'
 import { SafeAreaView } from 'react-native-safe-area-context'
@@ -80,7 +80,11 @@ const Signup = () => {
   }
 
   return (
-    <KeyboardAvoidingView>
+    <KeyboardAvoidingView
+      style={{ flex: 1 }}
+      behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+      keyboardVerticalOffset={Platform.OS === 'ios' ? 0 : 20}
+    >
       <StatusBar style="auto" />
       <SafeAreaView className='bg-background h-full flex justify-center' >
         {/* <Text className="text-red-400 font-bold bg-primary">Hello Pradeep!</Text> */}

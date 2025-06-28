@@ -1,6 +1,6 @@
 import { View, Text, Pressable, EmitterSubscription } from 'react-native'
 import React, { useEffect, useCallback, useState } from 'react'
-import { getAccessToken, getRefreshToken, getUser, isLoggedIn, isTokenExpired, verifyToken } from '@/utils/secureStore'
+import { clearSecureStore, getAccessToken, getRefreshToken, getUser, isLoggedIn, isTokenExpired, verifyToken } from '@/utils/secureStore'
 import { Link, useRouter } from 'expo-router'
 import * as Linking from 'expo-linking';
 import { useAuthStore } from '@/store/authStore'
@@ -51,40 +51,75 @@ const index = () => {
     useEffect(() => {
         (async () => {
             try {
-                const refreshToken = await getRefreshToken() || ""
-                const isTokenValid = !isTokenExpired(refreshToken)
-                console.log("isTokenValid: ", isTokenValid)
+                const refreshToken = await getRefreshToken()
 
-                if (!isTokenValid) {
-                    console.log("Refresh token is expired")
-                    router.replace("/")
-                    // replace push with replace to avoid going back to this page
+                if (refreshToken && isTokenExpired(refreshToken)) {
+                    // Clear expired tokens
+                    await clearSecureStore()
+                    console.log("Cleared expired tokens")
+                }
+
+                const isUserLoggedIn = await isLoggedIn()
+                console.log("isUserLoggedIn: ", isUserLoggedIn)
+
+                if (isUserLoggedIn) {
+                    const user = await getUser()
+                    const refreshTokenFresh = await getRefreshToken() || ""
+                    const accessToken = await getAccessToken() || ""
+                    setUser(user)
+                    setAccessToken(accessToken)
+                    setRefreshToken(refreshTokenFresh)
+                    router.replace("/(tabs)")
+                } else {
+                    console.log("User is not logged in - showing welcome screen")
                 }
             } catch (error) {
-                console.log("Error checking token: ", error)
-                router.replace("/")
+                console.log("Error checking authentication:", error)
+                await clearSecureStore() // Clear any corrupted data
             }
         })()
     }, [])
 
-    useEffect(() => {
-        (async () => {
-            const isUserLoggedIn = await isLoggedIn()
 
-            console.log("isUserLoggedIn: ", isUserLoggedIn)
-            if (isUserLoggedIn) {
-                const user = await getUser()
-                const refreshToken = await getRefreshToken() || ""
-                const accessToken = await getAccessToken() || ""
-                setUser(user)
-                setAccessToken(accessToken)
-                setRefreshToken(refreshToken)
-                router.replace("/(tabs)")
-            } else {
-                console.log("User is not logged in")
-            }
-        })()
-    }, [])
+    // useEffect(() => {
+    //     (async () => {
+    //         try {
+    //             const refreshToken = await getRefreshToken() || ""
+    //             const isTokenValid = !isTokenExpired(refreshToken)
+    //             console.log("isTokenValid: ", isTokenValid)
+
+    //             if (!isTokenValid) {
+    //                 console.log("Refresh token is expired")
+    //                 router.replace("/")
+    //                 // replace push with replace to avoid going back to this page
+    //             }
+    //         } catch (error) {
+    //             console.log("Error checking token: ", error)
+    //             router.replace("/")
+    //         }
+    //     })()
+    // }, [])
+
+    // useEffect(() => {
+    //     (async () => {
+    //         const isUserLoggedIn = await isLoggedIn()
+    //         console.log("isUserLoggedIn: ", isUserLoggedIn)
+
+    //         if (isUserLoggedIn) {
+    //             const user = await getUser()
+    //             const refreshToken = await getRefreshToken() || ""
+    //             const accessToken = await getAccessToken() || ""
+    //             setUser(user)
+    //             setAccessToken(accessToken)
+    //             setRefreshToken(refreshToken)
+    //             router.replace("/(tabs)")
+    //         } else {
+    //             console.log("User is not logged in")
+    //         }
+    //     })()
+    // }, [])
+
+
     // const handleDeepLink = useCallback(async (event: DeepLinkEvent) => {
     //     console.log('🔗 Deep link received:', event.url);
 
@@ -164,13 +199,13 @@ const index = () => {
                     </Text>
 
                     <Text className="text-placeholderText text-lg text-center mb-6">
-                        Discover and share the best books and course with your community. Start your learning journey now!
+                        Share book & course recommendations with photos and videos. Build your learning community and discover your next great read! 🎥📖
                     </Text>
 
                     <Link href="/(auth)" asChild>
                         <Pressable className="bg-[#1976d2] px-8 py-3 rounded-xl shadow-lg flex-row items-center active:opacity-90">
                             <Ionicons name="log-in-outline" size={22} color="#fff" />
-                            <Text className="text-white text-lg font-semibold ml-2">Get Started</Text>
+                            <Text className="text-white text-lg font-semibold ml-2">Start Recommending</Text>
                         </Pressable>
                     </Link>
 
@@ -180,8 +215,8 @@ const index = () => {
                         transition={{ delay: 500, duration: 800 }}
                         className="text-placeholderText text-center mt-8 italic px-3"
                     >
-                        "The more that you read, the more things you will know. The more that you learn, the more places you'll go."
-                        {"\n"}– Dr. Seuss
+                        "Create video reviews, rate your favorites, and help others discover amazing books and courses. Your next recommendation could change someone's life!"
+                        {"\n"}✨ Rate • Review • Recommend
                     </MotiText>
                 </MotiView>
             </SafeAreaView>
