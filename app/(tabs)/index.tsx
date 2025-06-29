@@ -13,7 +13,7 @@ import { BookCardImage } from "@/Component/BookCard";
 import ShowMoreText from "@/Component/ShowMoreText"
 import { FlashList } from "@shopify/flash-list";
 import { useVideoPlayerStore } from "@/store/playerStore";
-import BookFilter from '@/Component/BookFilter';
+
 
 export default function Index() {
 
@@ -30,8 +30,7 @@ export default function Index() {
   // console.log("Books: ", Books)
 
   const router = useRouter()
-
-  const { pauseAllVideos } = useVideoPlayerStore();
+  
   const { fetchAllBooks, fetchBooksByGenre, isLoading } = useAuthStore()
   const limit = 5 // Number of books to fetch per page
 
@@ -106,52 +105,6 @@ export default function Index() {
     }
   }
 
-  // Handle viewability changes
-  const onViewableItemsChanged = useCallback(({ viewableItems }: { viewableItems: ViewToken[] }) => {
-    const visibleIds = viewableItems.map(item => item.item._id);
-    setVisibleItems(visibleIds);
-
-    // Pause all videos when scrolling fast or when no items are visible
-    if (visibleIds.length === 0) {
-      pauseAllVideos();
-    }
-  }, [pauseAllVideos]);
-
-  const viewabilityConfig = {
-    itemVisiblePercentThreshold: 50, // Item must be 50% visible
-  };
-
-
-
-  //   const loadBooks = async (page: number, limit: number, genre: string = '') => {
-  //   if (genre) {
-  //     return await fetchBooksByGenre(genre, page, limit)
-  //   } else {
-  //     return await fetchAllBooks(page, limit)
-  //   }
-  // }
-
-  // const handleFilterChange = async (genre: string) => {
-  //   setSelectedGenre(genre)
-  //   setIsInitialLoading(true)
-  //   setBooks([])
-
-  //   const result = await loadBooks(1, limit, genre)
-  //   if (result.success) {
-  //     setBooks([...result.data.books])
-  //     setHasMore(result.data.totalPages > 1)
-  //     setPageNo(1)
-  //     setIsInitialLoading(false)
-  //   } else {
-  //     console.log("Error fetching filtered books: ", result.message)
-  //     setIsInitialLoading(false)
-  //   }
-  // }\
-
-  // const handleFilterChange = async (genre: string) => {
-  //   console.log("print hii from filter change")
-  // }
-
 
 
 
@@ -183,7 +136,7 @@ export default function Index() {
           pathname: "/page/[id]",
           params: { id: item._id, title: item.title }
         }} > */}
-        <BookCardImage item={item} shouldPlay={isVisible} />
+        <BookCardImage item={item} shouldPlay={false} />
         {/* </Link> */}
         <View className='relative flex-row items-center justify-between ' >
           <View className=' flex-1 gap-1 ml-4 ' >
@@ -224,9 +177,36 @@ export default function Index() {
 
 
 
+const LoadingFooter = React.memo(() => (
+    <View style={{ paddingVertical: 16, alignItems: 'center' }}>
+        <ActivityIndicator size="small" color="#1976D2" />
+    </View>
+));
 
+const EmptyFooter = React.memo(() => <View />);
 
-
+const ListEmpty = React.memo(() => (
+    <View className="flex-1 items-center justify-center p-8">
+        <Ionicons name="book-outline" size={64} color="#6d93b8" />
+        <Text className="text-textPrimary text-2xl font-bold mt-4">No books found</Text>
+        <Text className="text-placeholderText text-center mt-2">
+            Be the first to recommend a book or pull down to refresh
+        </Text>
+        <View className="mt-6 border border-cardBackground rounded-lg p-4 bg-cardBackground/10">
+            <Text className="text-textDark text-center italic">
+                "The more that you read, the more things you will know. The more that you learn, the more places you'll go." - Dr. Seuss
+            </Text>
+        </View>
+    </View>
+));
+const ListHeader = React.memo(() => (
+    <View className="flex items-center justify-center px-5 mb-3">
+        <View className="flex items-center">
+            <Text className='text-textPrimary text-4xl'>Suggest 📚</Text>
+            <Text>Discover great Learning from community 👇</Text>
+        </View>
+    </View>
+));
 
 
 
@@ -252,41 +232,11 @@ export default function Index() {
               contentContainerStyle={{ paddingBottom: 16 }}
               onRefresh={handleRefresh}
               refreshing={isRefreshing}
-              onViewableItemsChanged={onViewableItemsChanged}
-              viewabilityConfig={viewabilityConfig}
-              ListFooterComponent={
-                isLoadingMore ? () => (
-                  <View style={{ paddingVertical: 16, alignItems: 'center' }}>
-                    <ActivityIndicator size="small" color="#1976D2" />
-                  </View>
-                ) : (
-                  <View />
-                )
-
-              }
-              ListEmptyComponent={() => (
-                <View className="flex-1 items-center justify-center p-8">
-                  <Ionicons name="book-outline" size={64} color="#6d93b8" />
-                  <Text className="text-textPrimary text-2xl font-bold mt-4">No books found</Text>
-                  <Text className="text-placeholderText text-center mt-2">Be the first to recommend a book or pull down to refresh</Text>
-                  <View className="mt-6 border border-cardBackground rounded-lg p-4 bg-cardBackground/10">
-                    <Text className="text-textDark text-center italic">"The more that you read, the more things you will know. The more that you learn, the more places you'll go." - Dr. Seuss</Text>
-                  </View>
-                </View>
-              )}
-              ListHeaderComponent={() => (
-                <View className="flex items-center justify-center px-5 mb-3">
-                  <View className="flex items-center " >
-                    <Text className='text-textPrimary text-5xl' >Suggest 📚 </Text>
-                    <Text>Discover great Learning from community 👇 </Text>
-                  </View>
-                  {/* <BookFilter
-                    onFilterChange={handleFilterChange}
-                    selectedGenre={selectedGenre}
-                  /> */}
-                </View>
-              )}
-            />
+              removeClippedSubviews={true}
+              ListFooterComponent={isLoadingMore ? LoadingFooter : EmptyFooter}
+              ListEmptyComponent={ListEmpty}
+              ListHeaderComponent={ListHeader}
+              />
           )}
         </View>
       </SafeAreaView>

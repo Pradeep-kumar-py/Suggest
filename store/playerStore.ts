@@ -2,11 +2,12 @@ import { create } from 'zustand';
 
 interface VideoPlayerState {
   currentPlayingId: string | null;
-  setCurrentPlayingId: (id: string | null) => void;
-  pauseAllVideos: () => void;
   videoPlayers: Map<string, any>;
+  
+  setCurrentPlayingId: (id: string | null) => void;
   registerPlayer: (id: string, player: any) => void;
   unregisterPlayer: (id: string) => void;
+  pauseAllVideos: () => void;
 }
 
 export const useVideoPlayerStore = create<VideoPlayerState>((set, get) => ({
@@ -16,25 +17,22 @@ export const useVideoPlayerStore = create<VideoPlayerState>((set, get) => ({
   setCurrentPlayingId: (id: string | null) => {
     const { currentPlayingId, videoPlayers } = get();
     
+    // Prevent unnecessary state updates
+    if (currentPlayingId === id) return;
+    
     // Pause the currently playing video if there is one
     if (currentPlayingId && currentPlayingId !== id) {
       const currentPlayer = videoPlayers.get(currentPlayingId);
       if (currentPlayer) {
-        currentPlayer.pause();
+        try {
+          currentPlayer.pause();
+        } catch (error) {
+          console.warn('Error pausing video:', error);
+        }
       }
     }
     
     set({ currentPlayingId: id });
-  },
-  
-  pauseAllVideos: () => {
-    const { videoPlayers } = get();
-    videoPlayers.forEach((player) => {
-      if (player) {
-        player.pause();
-      }
-    });
-    set({ currentPlayingId: null });
   },
   
   registerPlayer: (id: string, player: any) => {
@@ -55,5 +53,19 @@ export const useVideoPlayerStore = create<VideoPlayerState>((set, get) => ({
     }
     
     set({ videoPlayers: newPlayers });
+  },
+  
+  pauseAllVideos: () => {
+    const { videoPlayers } = get();
+    videoPlayers.forEach((player) => {
+      if (player) {
+        try {
+          player.pause();
+        } catch (error) {
+          console.warn('Error pausing video:', error);
+        }
+      }
+    });
+    set({ currentPlayingId: null });
   },
 }));
