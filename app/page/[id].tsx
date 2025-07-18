@@ -1,4 +1,4 @@
-import { View, Text, StyleSheet, Pressable, Linking, ScrollView } from 'react-native'
+import { View, Text, StyleSheet, Pressable, Linking, ScrollView, ActivityIndicator } from 'react-native'
 import React, { useEffect, useState } from 'react'
 import { Link, useLocalSearchParams } from 'expo-router';
 import { useAuthStore } from '@/store/authStore';
@@ -150,7 +150,12 @@ const ComponentPage = () => {
                             <Pressable onPress={generateSummary} >
                                 <Text className="border-2 rounded-md border-blue-400 text-center p-2 bg-blue-300 my-2 " >Generate summary</Text>
                             </Pressable>
-                            {summaryLoading && <Text className='my-3' >Loading summary...</Text>}
+                            {summaryLoading && (
+                                <View style={{ flexDirection: 'row', alignItems: 'center', marginVertical: 12 }}>
+                                    <ActivityIndicator size="small" color="#2563eb" />
+                                    <Text style={{ marginLeft: 10 }}>Generating summary...</Text>
+                                </View>
+                            )}
                             {summaryError && <Text style={{ color: 'red' }}>{summaryError}</Text>}
                             {summary && (
                                 <View style={{ marginTop: 10, backgroundColor: '#e0e7ff', padding: 10, borderRadius: 8 }}>
