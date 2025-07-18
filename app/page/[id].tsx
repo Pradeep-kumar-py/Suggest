@@ -21,7 +21,7 @@ const ComponentPage = () => {
     console.log("ComponentPage id: ", id)
 
     const [SingleBook, setSingleBook] = useState<BookType | null>(null)
-    console.log("SingleBook: ", SingleBook)
+    // console.log("SingleBook: ", SingleBook)
 
     useEffect(() => {
         (async () => {
@@ -51,7 +51,7 @@ const ComponentPage = () => {
             })
 
             const data = await response.json()
-            console.log(data);
+            // console.log(data);
 
             if (!response.ok) {
                 throw new Error(data.message);
@@ -78,7 +78,7 @@ const ComponentPage = () => {
     }
 
     const item = SingleBook as BookType;
-    console.log("item: ", item)
+    // console.log("item: ", item)
 
     return (
         <>
