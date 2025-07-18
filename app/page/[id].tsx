@@ -9,10 +9,15 @@ import { Ionicons } from '@expo/vector-icons';
 import ShowMoreText from '@/Component/ShowMoreText';
 import { SafeAreaProvider, SafeAreaView } from 'react-native-safe-area-context';
 import { StatusBar } from 'expo-status-bar';
+import { FASTAPI_URI } from '@/utils/constant';
 
 const ComponentPage = () => {
     const { isLoading, getSingleBook } = useAuthStore()
     const { id } = useLocalSearchParams();
+    const [summary, setSummary] = useState<string | null>(null)
+    const [summaryLoading, setSummaryLoading] = useState(false)
+    const [summaryError, setSummaryError] = useState<string | null>(null)
+
     console.log("ComponentPage id: ", id)
 
     const [SingleBook, setSingleBook] = useState<BookType | null>(null)
@@ -31,6 +36,38 @@ const ComponentPage = () => {
             }
         })()
     }, [])
+
+    const generateSummary = async () => {
+        console.log("generate summary is pressed")
+        setSummaryLoading(true)
+        setSummaryError(null)
+        try {
+            const response = await fetch(`${FASTAPI_URI}/process-image`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ title: SingleBook?.title, image_url: SingleBook?.image }),
+            })
+
+            const data = await response.json()
+            console.log(data);
+
+            if (!response.ok) {
+                throw new Error(data.message);
+            }
+            setSummaryLoading(false)
+            if (data.summary) {
+                setSummary(data.summary)
+            }
+        } catch (error) {
+            console.log("error while fetching data from fastapi");
+            setSummaryLoading(false)
+            if (error instanceof Error) {
+                setSummaryError(error.message);
+            }
+        }
+    }
 
     if (isLoading) {
         return <Text>Loading...</Text>
@@ -108,6 +145,18 @@ const ComponentPage = () => {
                                 )}
                                 <Text className="text-placeholderText">{item.createdAt ? new Date(item.createdAt).toLocaleDateString() : ''}</Text>
                             </View>
+                        </View>
+                        <View>
+                            <Pressable onPress={generateSummary} >
+                                <Text className="border-2 rounded-md border-blue-400 text-center p-2 bg-blue-300 my-2 " >Generate summary</Text>
+                            </Pressable>
+                            {summaryLoading && <Text className='my-3' >Loading summary...</Text>}
+                            {summaryError && <Text style={{ color: 'red' }}>{summaryError}</Text>}
+                            {summary && (
+                                <View style={{ marginTop: 10, backgroundColor: '#e0e7ff', padding: 10, borderRadius: 8 }}>
+                                    <Text>{summary}</Text>
+                                </View>
+                            )}
                         </View>
                     </View>
                 </ScrollView>

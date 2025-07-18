@@ -2,7 +2,8 @@
   "expo": {
     "name": "Suggest",
     "slug": "Suggest",
-    "version": "1.0.0",
+    "version": "1.0.1",
+    "description": "An app to suggest ideas and get recommendations.",
     "orientation": "portrait",
     "icon": "./assets/images/icon.png",
     "scheme": "suggest",
