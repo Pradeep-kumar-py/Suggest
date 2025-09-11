@@ -29,13 +29,13 @@ export default function Index() {
   const [isInitialLoading, setIsInitialLoading] = useState(true)
   const [isLoadingMore, setisLoadingMore] = useState(false)
   const [visibleItems, setVisibleItems] = useState<string[]>([]);
-  const [selectedGenre, setSelectedGenre] = useState('')
+  const [selectedGenre, setSelectedGenre] = useState('all')
   const [selectedTab, setSelectedTab] = useState<'post' | 'video'>('post');
   const [showGenreDropdown, setShowGenreDropdown] = useState(false);
   const [isUsingDemoData, setIsUsingDemoData] = useState(false);
 
 const genreOptions = [
-  { label: 'All Genres', value: '' },
+  { label: 'all', value: '' },
   { label: 'Fiction', value: 'fiction' },
   { label: 'Non-Fiction', value: 'non-fiction' },
   { label: 'Technology', value: 'technology' },
@@ -87,10 +87,20 @@ const genreOptions = [
       } else {
         console.log("Error fetching books: ", result.message)
         const categorizedDemoBooks = categorizeBooks(demoBooks);
-        setBooks(categorizedDemoBooks);
-        setHasMore(false); // No more pages for demo
-        setIsUsingDemoData(true); // Indicate demo data is in use
-        setIsInitialLoading(false)
+        if (selectedGenre === 'all') {
+          setBooks(categorizedDemoBooks);
+          setHasMore(false); // No more pages for demo
+          setIsUsingDemoData(true); // Indicate demo data is in use
+          setIsInitialLoading(false);
+        }else{
+          Alert.alert("Error", "No books found for the selected genre. Showing demo data instead.");
+          setBooks(categorizedDemoBooks.filter(book => book.genre.toLowerCase() === selectedGenre.toLowerCase()));
+          setHasMore(false); // No more pages for demo
+          setIsUsingDemoData(true); // Indicate demo data is in use
+          setIsInitialLoading(false);
+        }
+        setIsInitialLoading(false);
+
       }
     })()
   }, [selectedGenre])
@@ -320,7 +330,7 @@ const genreOptions = [
           className="bg-blue-50 rounded-lg border border-gray-300 mx-1 h-12  px-3 flex-row justify-between items-center"
         >
           <Text className="text-gray-800 text-base">
-            {selectedGenre === '' ? 'All Genres' : selectedGenre}
+            {selectedGenre === 'all' ? 'All Genres' : selectedGenre}
           </Text>
           <Ionicons
             name={showGenreDropdown ? "chevron-up" : "chevron-down"}

@@ -10,6 +10,8 @@ import ShowMoreText from '@/Component/ShowMoreText';
 import { SafeAreaProvider, SafeAreaView } from 'react-native-safe-area-context';
 import { StatusBar } from 'expo-status-bar';
 import { FASTAPI_URI } from '@/utils/constant';
+import * as Speech from 'expo-speech';
+
 
 const ComponentPage = () => {
     const { isLoading, getSingleBook } = useAuthStore()
@@ -17,6 +19,7 @@ const ComponentPage = () => {
     const [summary, setSummary] = useState<string | null>(null)
     const [summaryLoading, setSummaryLoading] = useState(false)
     const [summaryError, setSummaryError] = useState<string | null>(null)
+    const [play, setPlay] = useState(false)
 
     console.log("ComponentPage id: ", id)
 
@@ -68,6 +71,21 @@ const ComponentPage = () => {
             }
         }
     }
+
+    const speakSummary = () => {
+        if (summary) {
+            setPlay(true);
+            Speech.speak(summary, {
+                language: 'en', // Adjust language as needed
+                pitch: 1,
+                rate: 1,
+            });
+        }
+    };
+    const pauseSummary = () => {
+        setPlay(false);
+        Speech.stop();
+    };
 
     if (isLoading) {
         return <Text>Loading...</Text>
@@ -146,9 +164,14 @@ const ComponentPage = () => {
                                 <Text className="text-placeholderText">{item.createdAt ? new Date(item.createdAt).toLocaleDateString() : ''}</Text>
                             </View>
                         </View>
+
                         <View>
-                            <Pressable onPress={generateSummary} >
-                                <Text className="border-2 rounded-md border-blue-400 text-center p-2 bg-blue-300 my-2 " >Generate summary</Text>
+                            <Pressable
+                                onPress={generateSummary}
+                                className="mt-2 bg-blue-500 rounded-lg shadow-lg flex-row items-center justify-center"
+                            >
+                                <Ionicons name="document-text-outline" size={20} color="white" className="mr-2" />
+                                <Text className="text-white font-bold text-center py-2 text-lg">Generate Summary</Text>
                             </Pressable>
                             {summaryLoading && (
                                 <View style={{ flexDirection: 'row', alignItems: 'center', marginVertical: 12 }}>
@@ -159,7 +182,19 @@ const ComponentPage = () => {
                             {summaryError && <Text style={{ color: 'red' }}>{summaryError}</Text>}
                             {summary && (
                                 <View style={{ marginTop: 10, backgroundColor: '#e0e7ff', padding: 10, borderRadius: 8 }}>
-                                    <Text>{summary}</Text>
+                                    {/* <Text>{summary}</Text> */}
+                                    <ShowMoreText text={summary} noLine={6} />
+                                    {play ? (
+                                        <Pressable onPress={pauseSummary} className="mt-2 bg-green-500 rounded-lg shadow-lg flex-row items-center justify-center">
+                                            <Ionicons name="pause-circle" size={20} color="white" className="mr-2" />
+                                            <Text className="text-white font-bold text-center py-2 text-lg">Pause Summary</Text>
+                                        </Pressable>
+                                    ) : (
+                                        <Pressable onPress={speakSummary} className="mt-2 bg-green-500 rounded-lg shadow-lg flex-row items-center justify-center">
+                                            <Ionicons name="play-circle" size={20} color="white" className="mr-2" />
+                                            <Text className="text-white font-bold text-center py-2 text-lg">Speak Summary</Text>
+                                        </Pressable>
+                                    )}
                                 </View>
                             )}
                         </View>
