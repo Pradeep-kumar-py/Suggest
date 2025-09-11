@@ -44,6 +44,7 @@ export interface BookType {
     link: string,
     createdAt: string,
     genre: string
+    mediaType?: 'post' | 'video'; // Add this line
 }
 
 export type DeepLinkEvent = {

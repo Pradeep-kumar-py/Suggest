@@ -5,18 +5,13 @@ import { useVideoPlayer, VideoView } from 'expo-video';
 import { BookType } from "@/utils/types";
 import { Link } from 'expo-router';
 import { useVideoPlayerStore } from '@/store/playerStore';
-import {AntDesign} from '@expo/vector-icons';
+import { AntDesign } from '@expo/vector-icons';
 
 export const BookCardImage = React.memo(({ item, shouldPlay = false }: { item: BookType, shouldPlay?: boolean }) => {
     const [aspectRatio, setAspectRatio] = useState<number>(0.65);
     const [mediaType, setMediaType] = useState<'image' | 'video'>('image');
 
-    const {
-        currentPlayingId,
-        setCurrentPlayingId,
-        registerPlayer,
-        unregisterPlayer
-    } = useVideoPlayerStore();
+    const { currentPlayingId, setCurrentPlayingId } = useVideoPlayerStore();
 
     const mediaUri = item.image;
     const videoId = `video-${item._id}`;
@@ -32,7 +27,7 @@ export const BookCardImage = React.memo(({ item, shouldPlay = false }: { item: B
 
     // Create video player only for videos
     const player = useVideoPlayer(
-        mediaType === 'video' ? mediaUri : '', 
+        mediaType === 'video' ? mediaUri : '',
         (player) => {
             if (mediaType === 'video') {
                 player.loop = true;
@@ -43,26 +38,10 @@ export const BookCardImage = React.memo(({ item, shouldPlay = false }: { item: B
     // Register/unregister video player
     useEffect(() => {
         if (mediaType === 'video' && player) {
-            registerPlayer(videoId, player);
-            
-            return () => {
-                try {
-                    player.pause();
-                } catch (error) {
-                    console.warn('Error pausing video on cleanup:', error);
-                }
-                unregisterPlayer(videoId);
-            };
-        }
-    }, [mediaType, player, videoId, registerPlayer, unregisterPlayer]);
+            const shouldPlay = currentPlayingId === videoId;
 
-    // Handle video play/pause based on current playing video
-    useEffect(() => {
-        if (mediaType === 'video' && player) {
-            const shouldThisVideoPlay = currentPlayingId === videoId;
-            
             try {
-                if (shouldThisVideoPlay) {
+                if (shouldPlay) {
                     player.play();
                 } else {
                     player.pause();
@@ -72,6 +51,7 @@ export const BookCardImage = React.memo(({ item, shouldPlay = false }: { item: B
             }
         }
     }, [currentPlayingId, videoId, mediaType, player]);
+
 
     const handleImageLoad = (event: { source: { width: number; height: number } }) => {
         const { width, height } = event.source;

@@ -2,7 +2,7 @@ import { ActivityIndicator, ViewToken, Alert, Linking, Pressable, Text, View, St
 import { Link, useRouter } from "expo-router";
 import { Entypo, Ionicons, MaterialIcons } from '@expo/vector-icons';
 import { SafeAreaView } from "react-native-safe-area-context";
-import React, { useCallback, useEffect, useState } from "react";
+import React, { useCallback, useEffect, useMemo, useState } from "react";
 import { useAuthStore } from "@/store/authStore";
 import { BookType } from "@/utils/types";
 import { Image } from "expo-image";
@@ -12,7 +12,10 @@ import { StatusBar } from "expo-status-bar";
 import { BookCardImage } from "@/Component/BookCard";
 import ShowMoreText from "@/Component/ShowMoreText"
 import { FlashList } from "@shopify/flash-list";
-import { useVideoPlayerStore } from "@/store/playerStore";
+import { Picker } from "@react-native-picker/picker";
+// import RNPickerSelect from 'react-native-picker-select';
+
+
 
 
 export default function Index() {
@@ -25,15 +28,24 @@ export default function Index() {
   const [isLoadingMore, setisLoadingMore] = useState(false)
   const [visibleItems, setVisibleItems] = useState<string[]>([]);
   const [selectedGenre, setSelectedGenre] = useState('')
+  const [selectedTab, setSelectedTab] = useState<'post' | 'video'>('post');
+  const [showGenreDropdown, setShowGenreDropdown] = useState(false);
+
 
 
   // console.log("Books: ", Books)
 
   const router = useRouter()
-  
+
   const { fetchAllBooks, fetchBooksByGenre, isLoading } = useAuthStore()
   const limit = 5 // Number of books to fetch per page
 
+  const categorizeBooks = (books: BookType[]) => {
+    return books.map(book => ({
+      ...book,
+      mediaType: book.image.match(/\.(mp4|mov|mkv)$/i) ? 'video' as const : 'post' as const
+    }));
+  };
 
   useEffect(() => {
     (async () => {
@@ -42,7 +54,8 @@ export default function Index() {
       const result = await fetchAllBooks(1, limit)
       // console.log("Result: ", result)
       if (result.success) {
-        setBooks([...result.data.books])
+        const categorizedBooks = categorizeBooks(result.data.books);
+        setBooks(categorizedBooks)
         setHasMore(result.data.totalPages > 1)
         setPageNo(1)
         setIsInitialLoading(false)
@@ -54,6 +67,10 @@ export default function Index() {
     })()
   }, [])
 
+  const filteredBooks = useMemo(() => {
+    return Books.filter(book => book.mediaType === selectedTab);
+  }, [Books, selectedTab]);
+
 
 
   const handleRefresh = async () => {
@@ -63,7 +80,8 @@ export default function Index() {
       const result = await fetchAllBooks(1, limit)
       console.log("Result from handle refresh: ", result)
       if (result.success) {
-        setBooks([...result.data.books])
+        const categorizedBooks = categorizeBooks(result.data.books);
+        setBooks(categorizedBooks)
         setPageNo(1)
         setHasMore(1 < result.data.totalPages)
       } else {
@@ -87,7 +105,8 @@ export default function Index() {
       const result = await fetchAllBooks(nextPage, limit)
       console.log("Result from load more books: ", result)
       if (result.success) {
-        setBooks(prevBooks => [...prevBooks, ...result.data.books]) // Append new books to the existing list
+        const categorizedBooks = categorizeBooks(result.data.books);
+        setBooks(prevBooks => [...prevBooks, ...categorizedBooks]) // Append new books to the existing list
         setPageNo(nextPage) // Update the page number
         setHasMore(nextPage < result.data.totalPages) // Check if there are more pages
       } else {
@@ -109,6 +128,7 @@ export default function Index() {
 
 
 
+  // Update the renderBookCard function to check media type
   const renderBookCard = ({ item }: { item: BookType }) => {
     const isVisible = visibleItems.includes(item._id);
 
@@ -132,12 +152,7 @@ export default function Index() {
           />
           <Text className="capitalize font-bold text-textPrimary text-xl ml-3 " >{item.user?.name}</Text>
         </View>
-        {/* <Link href={{
-          pathname: "/page/[id]",
-          params: { id: item._id, title: item.title }
-        }} > */}
-        <BookCardImage item={item} shouldPlay={false} />
-        {/* </Link> */}
+        <BookCardImage item={item} shouldPlay={selectedTab === 'video' && isVisible} />
         <View className='relative flex-row items-center justify-between ' >
           <View className=' flex-1 gap-1 ml-4 ' >
             <Text className="text-textDark font-bold text-2xl capitalize">{item.title}</Text>
@@ -171,43 +186,122 @@ export default function Index() {
           </View>
         </View>
       </View>
-
     )
   }
 
 
-
-const LoadingFooter = React.memo(() => (
+  const LoadingFooter = React.memo(() => (
     <View style={{ paddingVertical: 16, alignItems: 'center' }}>
-        <ActivityIndicator size="small" color="#1976D2" />
+      <ActivityIndicator size="small" color="#1976D2" />
     </View>
-));
+  ));
 
-const EmptyFooter = React.memo(() => <View />);
+  const EmptyFooter = React.memo(() => <View />);
 
-const ListEmpty = React.memo(() => (
+  const ListEmpty = React.memo(() => (
     <View className="flex-1 items-center justify-center p-8">
-        <Ionicons name="book-outline" size={64} color="#6d93b8" />
-        <Text className="text-textPrimary text-2xl font-bold mt-4">No books found</Text>
-        <Text className="text-placeholderText text-center mt-2">
-            Be the first to recommend a book or pull down to refresh
+      <Ionicons name="book-outline" size={64} color="#6d93b8" />
+      <Text className="text-textPrimary text-2xl font-bold mt-4">No books found</Text>
+      <Text className="text-placeholderText text-center mt-2">
+        Be the first to recommend a book or pull down to refresh
+      </Text>
+      <View className="mt-6 border border-cardBackground rounded-lg p-4 bg-cardBackground/10">
+        <Text className="text-textDark text-center italic">
+          "The more that you read, the more things you will know. The more that you learn, the more places you'll go." - Dr. Seuss
         </Text>
-        <View className="mt-6 border border-cardBackground rounded-lg p-4 bg-cardBackground/10">
-            <Text className="text-textDark text-center italic">
-                "The more that you read, the more things you will know. The more that you learn, the more places you'll go." - Dr. Seuss
-            </Text>
-        </View>
+      </View>
     </View>
-));
-const ListHeader = React.memo(() => (
-    <View className="flex items-center justify-center px-5 mb-3">
-        <View className="flex items-center">
-            <Text className='text-textPrimary text-4xl'>Suggest 📚</Text>
-            <Text>Discover great Learning from community 👇</Text>
-        </View>
-    </View>
-));
+  ));
 
+
+  const ListHeader = React.memo(() => (
+    <View className="flex items-center justify-center px-5 mb-3">
+      <View className="flex items-center">
+        <Text className='text-textPrimary text-4xl'>Suggest 📚</Text>
+        <Text>Discover great Learning from community 👇</Text>
+      </View>
+      <View className="flex flex-row justify-center gap-2 w-full mt-4 px-1">
+        <Pressable
+          onPress={() => setSelectedTab('post')}
+          className={`flex-1 bg-white shadow-md rounded-2xl py-4 px-6 flex justify-center items-center border ${selectedTab === 'post'
+            ? 'border-blue-300 bg-blue-50'
+            : 'border-blue-100'
+            } active:bg-blue-50`}
+        >
+          <View className="flex-row items-center gap-2">
+            <View className={`rounded-full p-2 ${selectedTab === 'post' ? 'bg-blue-600' : 'bg-blue-500'
+              }`}>
+              <Ionicons name="create-outline" size={16} color="white" />
+            </View>
+            <Text className={`text-lg font-semibold ${selectedTab === 'post' ? 'text-blue-700' : 'text-blue-600'
+              }`}>Post</Text>
+          </View>
+        </Pressable>
+
+        <Pressable
+          onPress={() => setSelectedTab('video')}
+          className={`flex-1 bg-white shadow-md rounded-2xl py-4 px-6 flex justify-center items-center border ${selectedTab === 'video'
+            ? 'border-purple-300 bg-purple-50'
+            : 'border-purple-100'
+            } active:bg-purple-50`}
+        >
+          <View className="flex-row items-center gap-2">
+            <View className={`rounded-full p-2 ${selectedTab === 'video' ? 'bg-purple-600' : 'bg-purple-500'
+              }`}>
+              <Ionicons name="videocam-outline" size={16} color="white" />
+            </View>
+            <Text className={`text-lg font-semibold ${selectedTab === 'video' ? 'text-purple-700' : 'text-purple-600'
+              }`}>Video</Text>
+          </View>
+        </Pressable>
+      </View>
+      <View className="mt-2 w-full relative">
+        {/* Main Picker Button */}
+        <Pressable
+          onPress={() => setShowGenreDropdown(!showGenreDropdown)}
+          className="bg-blue-50 rounded-lg border border-gray-300 mx-1 h-12  px-3 flex-row justify-between items-center"
+        >
+          <Text className="text-gray-800 text-base">
+            {selectedGenre === '' ? 'All Genres' :
+              selectedGenre === 'fiction' ? 'Fiction' : 'Other Genre'}
+          </Text>
+          <Ionicons
+            name={showGenreDropdown ? "chevron-up" : "chevron-down"}
+            size={20}
+            color="#333"
+          />
+        </Pressable>
+
+        {/* Custom Dropdown - starts exactly at bottom border */}
+        {showGenreDropdown && (
+          <View className="absolute top-12 left-1 right-1 bg-blue-50 rounded-lg rounded-t-none border border-gray-300 border-t-0 shadow-lg z-50">
+            {[
+              { label: 'All Genres', value: '' },
+              { label: 'Fiction', value: 'fiction' },
+              { label: 'Non-Fiction', value: 'non-fiction' },
+              { label: 'Science', value: 'science' },
+              { label: 'Biography', value: 'biography' },
+            ].map((genre, index) => (
+              <Pressable
+                key={genre.value}
+                onPress={() => {
+                  setSelectedGenre(genre.value);
+                  setShowGenreDropdown(false);
+                }}
+                className={`p-4 ${index < 4 ? 'border-b border-gray-200' : ''} ${selectedGenre === genre.value ? 'bg-blue-100' : 'bg-transparent'
+                  }`}
+              >
+                <Text className={`text-gray-800 text-base ${selectedGenre === genre.value ? 'font-bold' : 'font-normal'
+                  }`}>
+                  {genre.label}
+                </Text>
+              </Pressable>
+            ))}
+          </View>
+        )}
+      </View>
+    </View>
+  ));
 
 
 
@@ -223,7 +317,7 @@ const ListHeader = React.memo(() => (
             </View>
           ) : (
             <FlashList
-              data={Books}
+              data={filteredBooks}
               renderItem={renderBookCard}
               keyExtractor={item => item._id}
               showsVerticalScrollIndicator={false}
@@ -236,7 +330,7 @@ const ListHeader = React.memo(() => (
               ListFooterComponent={isLoadingMore ? LoadingFooter : EmptyFooter}
               ListEmptyComponent={ListEmpty}
               ListHeaderComponent={ListHeader}
-              />
+            />
           )}
         </View>
       </SafeAreaView>
