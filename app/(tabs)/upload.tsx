@@ -16,6 +16,8 @@ import { Picker } from '@react-native-picker/picker';
 
 const Upload = () => {
 
+  const { user } = useAuthStore()
+
   const [title, setTitle] = useState('')
   const [caption, setCaption] = useState('')
   const [rating, setRating] = useState(0)
@@ -105,9 +107,14 @@ const Upload = () => {
         setSelectedMediaUri(undefined);
       } else {
         console.error("Upload failed123: ", result.message);
+        if (!user) {
+          alert("You must be logged in to upload a book");
+          return
+        }
         alert(`Upload failed: ${result.message}`);
       }
     } catch (error) {
+
       alert("An error occurred while uploading the book");
       console.error(error);
     }

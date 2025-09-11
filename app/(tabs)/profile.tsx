@@ -16,7 +16,7 @@ const Profile = () => {
 
   const { user, fetchUserBooks, isLoading, uploadProfileImage, deleteBook } = useAuthStore()
   const router = useRouter()
-  // console.log(user)
+  console.log("user: ", user)
 
   const [Books, setBooks] = useState<UserBookType[]>([])
   const [pageNo, setPageNo] = useState(1)
@@ -248,11 +248,11 @@ const Profile = () => {
             )}
           </Pressable>
           <View className=' flex-1 ' >
-            <Text className="text-3xl text-textDark font-bold capitalize ">{user?.name}</Text>
-            <Text className="text-placeholderText">{user?.email}</Text>
+            <Text className="text-3xl text-textDark font-bold capitalize ">{user ? user.name : 'Guest'}</Text>
+            <Text className="text-placeholderText">{user ? user.email : 'No email provided'}</Text>
             <Text className="text-placeholderText">
-              Member since{'  '}
-              {user?.createdAt ? new Date(user.createdAt).toLocaleDateString() : ''}
+              Member since:{'  '}
+              {user?.createdAt ? new Date(user.createdAt).toLocaleDateString() : 'when you join us!'}
             </Text>
           </View>
         </View>
@@ -350,6 +350,10 @@ const Profile = () => {
     console.log('Logout pressed')
   }
 
+  const handleLogin = () => {
+    router.replace('/(auth)')
+  }
+
 
 
   return (
@@ -358,9 +362,17 @@ const Profile = () => {
       <SafeAreaView className="flex-1 bg-background">
         <View className='flex-1' >
           <UserBox />
-          <Pressable onPress={handleLogout} className="flex-row items-center justify-center bg-primary p-2 rounded-lg mx-5 ">
-            <Text className="text-white font-semibold text-lg">Logout</Text>
-          </Pressable>
+          {user ? (
+            <Pressable onPress={handleLogout} className="flex-row items-center gap-1 justify-center bg-primary p-2 rounded-lg mx-5 ">
+              <Ionicons name="log-out" size={20} color="white" />
+              <Text className="text-white font-semibold text-lg">Logout</Text>
+            </Pressable>
+          ) : (
+            <Pressable onPress={handleLogin} className="flex-row items-center gap-1 justify-center bg-primary p-2 rounded-lg mx-5 ">
+              <Ionicons name="log-in-outline" size={20} color="white" />
+              <Text className="text-white font-semibold text-lg">Login</Text>
+            </Pressable>
+          )}
           <View className='px-8 mt-8  ' >
             <View className="flex-row justify-between items-center text-textDark mb-4 ">
               <Text className='text-2xl font-bold' >Your Recomendation</Text>

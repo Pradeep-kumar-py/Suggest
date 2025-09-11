@@ -229,7 +229,7 @@ export const useAuthStore = create<AuthState>((set, get) => ({
     fetchAllBooks: async (pageNo: number, limit: number, genre?: string): Promise<{ success: boolean; message: string; data?: any }> => {
         set({ isLoading: true });
         try {
-            const response = await fetchWithAuth(`${API_BASE_URL}/api/book/getallbooks?page=${pageNo}&limit=${limit}&genre=${genre}`, {
+            const response = await fetch(`${API_BASE_URL}/api/book/getallbooks?page=${pageNo}&limit=${limit}&genre=${genre}`, {
                 method: 'GET',
                 headers: {
                     'Content-Type': 'application/json',

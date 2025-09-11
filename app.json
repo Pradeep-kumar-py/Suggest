@@ -2,8 +2,9 @@
   "expo": {
     "name": "Suggest",
     "slug": "Suggest",
-    "version": "1.0.1",
-    "description": "Suggest helps book lovers discover and share reading recommendations. Features include: browsing community book posts with photos/videos, rating and reviewing books, uploading your own recommendations with media, and connecting with fellow readers. The app includes user authentication, media upload capabilities, and social interaction features for book enthusiasts.",
+    "version": "1.0.2",
+    "description": "Discover and share book recommendations with AI-powered summaries and text-to-speech. Browse books instantly as a guest, or sign up to add your own recommendations and unlock advanced features like book summaries.",
+    "primaryColor": "#1976D2",
     "orientation": "portrait",
     "icon": "./assets/images/icon.png",
     "scheme": "suggest",

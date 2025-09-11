@@ -79,6 +79,7 @@ const ComponentPage = () => {
                 language: 'en', // Adjust language as needed
                 pitch: 1,
                 rate: 1,
+                voice: 'com.apple.ttsbundle.Samantha-compact',
             });
         }
     };

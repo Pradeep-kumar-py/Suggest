@@ -43,33 +43,33 @@ const index = () => {
         password = Password;
     console.log("Name: ", name);
 
-    const handleSignup = async () => {
-        console.log(name, email, password);
-        // Add null checks before calling registerUser
-        if (!name || !email || !password) {
-            alert("Please fill all the fields");
-            return;
-        }
-        const response = await registerUser(name, email, password);
-        console.log("Response: ", response);
-        if (response.success) {
-            alert("User registered successfully");
-            setSEmail("");
-            setSName("");
-            setSPassword("");
-            // Navigate to the main app screen after successful registration
-            router.replace("/(tabs)");
-        } else {
-            {
-                alert("User registration failed");
-                setSEmail("");
-                setSName("");
-                setSPassword("");
-                // Optionally, you can navigate back to the signup screen or show an error message
-                router.push("/(auth)/signup");
-            }
-        }
-    };
+    // const handleSignup = async () => {
+    //     console.log(name, email, password);
+    //     // Add null checks before calling registerUser
+    //     if (!name || !email || !password) {
+    //         alert("Please fill all the fields");
+    //         return;
+    //     }
+    //     const response = await registerUser(name, email, password);
+    //     console.log("Response: ", response);
+    //     if (response.success) {
+    //         alert("User registered successfully");
+    //         setSEmail("");
+    //         setSName("");
+    //         setSPassword("");
+    //         // Navigate to the main app screen after successful registration
+    //         router.replace("/(tabs)");
+    //     } else {
+    //         {
+    //             alert("User registration failed");
+    //             setSEmail("");
+    //             setSName("");
+    //             setSPassword("");
+    //             // Optionally, you can navigate back to the signup screen or show an error message
+    //             router.push("/(auth)/signup");
+    //         }
+    //     }
+    // };
 
     useEffect(() => {
         (async () => {
@@ -221,7 +221,7 @@ const index = () => {
                         your learning community and discover your next great read! 🎥📖
                     </Text>
 
-                    <Link href="/(auth)" asChild>
+                    <Link href="/(tabs)" asChild>
                         <Pressable className="bg-[#1976d2] px-8 py-3 rounded-xl shadow-lg flex-row items-center active:opacity-90">
                             <Ionicons name="log-in-outline" size={22} color="#fff" />
                             <Text className="text-white text-lg font-semibold ml-2">
