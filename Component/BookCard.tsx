@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import { View, Text, Pressable } from 'react-native';
 import { Image } from 'expo-image';
 import { useVideoPlayer, VideoView } from 'expo-video';
@@ -8,9 +8,9 @@ import { useVideoPlayerStore } from '@/store/playerStore';
 import { AntDesign } from '@expo/vector-icons';
 
 export const BookCardImage = React.memo(({ item, shouldPlay = false }: { item: BookType, shouldPlay?: boolean }) => {
-    const [aspectRatio, setAspectRatio] = useState<number>(0.65);
+    // const [aspectRatio, setAspectRatio] = useState<number>(0.65);
+    const aspectRatio = 0.65; // Fixed aspect ratio for consistency
     const [mediaType, setMediaType] = useState<'image' | 'video'>('image');
-
     const { currentPlayingId, setCurrentPlayingId } = useVideoPlayerStore();
 
     const mediaUri = item.image;
@@ -53,14 +53,24 @@ export const BookCardImage = React.memo(({ item, shouldPlay = false }: { item: B
     }, [currentPlayingId, videoId, mediaType, player]);
 
 
-    const handleImageLoad = (event: { source: { width: number; height: number } }) => {
-        const { width, height } = event.source;
-        if (width && height) {
-            setAspectRatio(width / height);
-        }
-    };
+    // const handleImageLoad = (event: { source: { width: number; height: number } }) => {
+    //     const { width, height } = event.source;
+    //     if (width && height) {
+    //         setAspectRatio(width / height);
+    //     }
+    // };
+
+    // const handleImageLoad = useCallback((event: { source: { width: number; height: number } }) => {
+    //     const { width, height } = event.source;
+    //     if (width && height) {
+    //         setAspectRatio(width / height);
+    //         setImageReady(true);
+    //     }
+    // }, []);
 
     // Handle video tap to play/pause
+   
+   
     const handleVideoPress = () => {
         if (mediaType === 'video') {
             if (currentPlayingId === videoId) {
@@ -81,7 +91,7 @@ export const BookCardImage = React.memo(({ item, shouldPlay = false }: { item: B
                         player={player}
                         style={{
                             width: '100%',
-                            aspectRatio: aspectRatio,
+                            aspectRatio: .53,
                             borderRadius: 10,
                         }}
                         contentFit="contain"
@@ -114,10 +124,12 @@ export const BookCardImage = React.memo(({ item, shouldPlay = false }: { item: B
                             style={{
                                 width: '100%',
                                 aspectRatio: aspectRatio,
-                                borderRadius: 10,
+                                borderRadius: 10
                             }}
-                            contentFit="contain"
-                            onLoad={handleImageLoad}
+                            contentFit="fill"
+                            // onLoad={handleImageLoad}
+                            transition={300}
+                            cachePolicy="memory-disk"
                         />
                     </View>
                 </Link>

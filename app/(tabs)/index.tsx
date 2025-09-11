@@ -13,6 +13,8 @@ import { BookCardImage } from "@/Component/BookCard";
 import ShowMoreText from "@/Component/ShowMoreText"
 import { FlashList } from "@shopify/flash-list";
 import { Picker } from "@react-native-picker/picker";
+import { demoBooks } from "@/utils/DemoData";
+
 // import RNPickerSelect from 'react-native-picker-select';
 
 
@@ -30,15 +32,34 @@ export default function Index() {
   const [selectedGenre, setSelectedGenre] = useState('')
   const [selectedTab, setSelectedTab] = useState<'post' | 'video'>('post');
   const [showGenreDropdown, setShowGenreDropdown] = useState(false);
+  const [isUsingDemoData, setIsUsingDemoData] = useState(false);
 
+const genreOptions = [
+  { label: 'All Genres', value: '' },
+  { label: 'Fiction', value: 'fiction' },
+  { label: 'Non-Fiction', value: 'non-fiction' },
+  { label: 'Technology', value: 'technology' },
+  { label: 'Science', value: 'science' },
+  { label: 'Biography', value: 'biography' },
+  { label: 'History', value: 'history' },
+  { label: 'Self-Help', value: 'self-help' },
+  { label: 'Business', value: 'business' },
+  { label: 'Programming', value: 'programming' },
+  { label: 'Design', value: 'design' },
+  { label: 'Cooking', value: 'cooking' },
+  { label: 'Travel', value: 'travel' },
+  { label: 'Health', value: 'health' },
+  { label: 'Philosophy', value: 'philosophy' },
+  { label: 'Education', value: 'education' }
+];
 
 
   // console.log("Books: ", Books)
 
   const router = useRouter()
 
-  const { fetchAllBooks, fetchBooksByGenre, isLoading } = useAuthStore()
-  const limit = 5 // Number of books to fetch per page
+  const { fetchAllBooks, isLoading } = useAuthStore()
+  const limit = 10 // Number of books to fetch per page
 
   const categorizeBooks = (books: BookType[]) => {
     return books.map(book => ({
@@ -47,53 +68,90 @@ export default function Index() {
     }));
   };
 
+
+
   useEffect(() => {
     (async () => {
       setIsInitialLoading(true)
       setBooks([])
-      const result = await fetchAllBooks(1, limit)
+      const result = await fetchAllBooks(1, limit, selectedGenre)
       // console.log("Result: ", result)
       if (result.success) {
         const categorizedBooks = categorizeBooks(result.data.books);
         setBooks(categorizedBooks)
         setHasMore(result.data.totalPages > 1)
         setPageNo(1)
+        setIsUsingDemoData(false);
         setIsInitialLoading(false)
 
       } else {
         console.log("Error fetching books: ", result.message)
+        const categorizedDemoBooks = categorizeBooks(demoBooks);
+        setBooks(categorizedDemoBooks);
+        setHasMore(false); // No more pages for demo
+        setIsUsingDemoData(true); // Indicate demo data is in use
         setIsInitialLoading(false)
       }
     })()
-  }, [])
+  }, [selectedGenre])
 
   const filteredBooks = useMemo(() => {
     return Books.filter(book => book.mediaType === selectedTab);
   }, [Books, selectedTab]);
 
 
+  // const handleRefresh = async () => {
+  //   setIsRefreshing(true)
+  //   try {
+  //     setBooks([]) // Clear the current books to fetch fresh data
+  //     const result = await fetchAllBooks(1, limit)
+  //     console.log("Result from handle refresh: ", result)
+  //     if (result.success) {
+  //       const categorizedBooks = categorizeBooks(result.data.books);
+  //       setBooks(categorizedBooks)
+  //       setPageNo(1)
+  //       setHasMore(1 < result.data.totalPages)
+  //     } else {
+  //       console.log("Error fetching books: ", result.message)
+  //     }
+  //   } catch (error) {
+  //     console.log("Error fetching books: ", error)
+
+  //   } finally {
+  //     setIsRefreshing(false)
+  //   }
+  // };
 
   const handleRefresh = async () => {
-    setIsRefreshing(true)
+    setIsRefreshing(true);
     try {
-      setBooks([]) // Clear the current books to fetch fresh data
-      const result = await fetchAllBooks(1, limit)
-      console.log("Result from handle refresh: ", result)
+      setBooks([]); // Clear the current books to fetch fresh data
+      const result = await fetchAllBooks(1, limit, selectedGenre);
       if (result.success) {
         const categorizedBooks = categorizeBooks(result.data.books);
-        setBooks(categorizedBooks)
-        setPageNo(1)
-        setHasMore(1 < result.data.totalPages)
+        setBooks(categorizedBooks);
+        setPageNo(1);
+        setHasMore(1 < result.data.totalPages);
+        setIsUsingDemoData(false);
       } else {
-        console.log("Error fetching books: ", result.message)
+        console.log("Error fetching books: ", result.message);
+        // Fallback to demo data
+        const categorizedDemoBooks = categorizeBooks(demoBooks);
+        setBooks(categorizedDemoBooks);
+        setHasMore(false);
+        setIsUsingDemoData(true);
       }
     } catch (error) {
-      console.log("Error fetching books: ", error)
+      console.log("Error fetching books: ", error);
+      // Fallback to demo data on exception
+      const categorizedDemoBooks = categorizeBooks(demoBooks);
+      setBooks(categorizedDemoBooks);
+      setHasMore(false);
+      setIsUsingDemoData(true);
     } finally {
-      setIsRefreshing(false)
+      setIsRefreshing(false);
     }
   };
-
 
   const loadMoreBooks = async () => {
     if (!hasMore || isLoading || isLoadingMore) return // Prevent loading more if there are no more books
@@ -102,7 +160,7 @@ export default function Index() {
     try {
       const nextPage = pageNo + 1 // Increment the page number
 
-      const result = await fetchAllBooks(nextPage, limit)
+      const result = await fetchAllBooks(nextPage, limit, selectedGenre)
       console.log("Result from load more books: ", result)
       if (result.success) {
         const categorizedBooks = categorizeBooks(result.data.books);
@@ -262,8 +320,7 @@ export default function Index() {
           className="bg-blue-50 rounded-lg border border-gray-300 mx-1 h-12  px-3 flex-row justify-between items-center"
         >
           <Text className="text-gray-800 text-base">
-            {selectedGenre === '' ? 'All Genres' :
-              selectedGenre === 'fiction' ? 'Fiction' : 'Other Genre'}
+            {selectedGenre === '' ? 'All Genres' : selectedGenre}
           </Text>
           <Ionicons
             name={showGenreDropdown ? "chevron-up" : "chevron-down"}
@@ -275,17 +332,11 @@ export default function Index() {
         {/* Custom Dropdown - starts exactly at bottom border */}
         {showGenreDropdown && (
           <View className="absolute top-12 left-1 right-1 bg-blue-50 rounded-lg rounded-t-none border border-gray-300 border-t-0 shadow-lg z-50">
-            {[
-              { label: 'All Genres', value: '' },
-              { label: 'Fiction', value: 'fiction' },
-              { label: 'Non-Fiction', value: 'non-fiction' },
-              { label: 'Science', value: 'science' },
-              { label: 'Biography', value: 'biography' },
-            ].map((genre, index) => (
+            {genreOptions.map((genre, index) => (
               <Pressable
                 key={genre.value}
                 onPress={() => {
-                  setSelectedGenre(genre.value);
+                  setSelectedGenre(genre.label);
                   setShowGenreDropdown(false);
                 }}
                 className={`p-4 ${index < 4 ? 'border-b border-gray-200' : ''} ${selectedGenre === genre.value ? 'bg-blue-100' : 'bg-transparent'
@@ -319,6 +370,7 @@ export default function Index() {
             <FlashList
               data={filteredBooks}
               renderItem={renderBookCard}
+              estimatedItemSize={604}
               keyExtractor={item => item._id}
               showsVerticalScrollIndicator={false}
               onEndReachedThreshold={0.1}
