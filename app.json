@@ -3,7 +3,7 @@
     "name": "Suggest",
     "slug": "Suggest",
     "version": "1.0.2",
-    "description": "Discover and share book recommendations with AI-powered summaries and text-to-speech. Browse books instantly as a guest, or sign up to add your own recommendations",
+    "description": "Fully functional book recommendation app with user-generated content, video reviews and AI summaries . Users can browse recommendations as guests or sign up to add their own book/course reviews with photos and videos.",
     "primaryColor": "#1976D2",
     "orientation": "portrait",
     "icon": "./assets/images/icon.png",
