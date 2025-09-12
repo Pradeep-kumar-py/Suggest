@@ -12,6 +12,7 @@ import { AnimatedButton } from '@/Component/AnimatedButton';
 import { useVideoPlayer, VideoView } from 'expo-video';
 import { useEvent } from 'expo';
 import { Picker } from '@react-native-picker/picker';
+import { Background } from '@react-navigation/elements';
 
 
 const Upload = () => {
@@ -186,11 +187,11 @@ const Upload = () => {
                     <Picker
                       selectedValue={genre}
                       onValueChange={setGenre}
-                      style={{ color: '#767676' }}
+                      style={{ color: '#767676', marginRight: 0, backgroundColor: '#f5f9ff' }}
                     >
-                      <Picker.Item label="Select a genre..." value="" />
+                      <Picker.Item label="Select a genre..." value="" style={{ color: '#767676', backgroundColor: '#f5f9ff' }} />
                       {genres.map((g) => (
-                        <Picker.Item key={g} label={g} value={g} />
+                        <Picker.Item key={g} label={g} value={g} style={{ color: '#767676', backgroundColor: '#f5f9ff' }} />
                       ))}
                     </Picker>
                   </View>

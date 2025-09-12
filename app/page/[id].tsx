@@ -77,9 +77,9 @@ const ComponentPage = () => {
             setPlay(true);
             Speech.speak(summary, {
                 language: 'en', // Adjust language as needed
-                pitch: 1,
-                rate: 1,
-                voice: 'com.apple.ttsbundle.Samantha-compact',
+                pitch: .9,
+                rate: .9,
+                voice: 'en-US-language',
             });
         }
     };

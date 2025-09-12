@@ -1,4 +1,4 @@
-import { View, Text, Image, TextInput, KeyboardAvoidingView, Alert, Pressable, Platform, } from 'react-native'
+import { View, Text, Image, TextInput, KeyboardAvoidingView, Alert, Pressable, Platform, ScrollView, } from 'react-native'
 import React, { useEffect, useState } from 'react'
 import { Link, useRouter, } from 'expo-router'
 import { SafeAreaView } from 'react-native-safe-area-context'
@@ -89,81 +89,87 @@ const login = () => {
 
 
   return (
+    <SafeAreaView className='bg-background flex-1'>
+      <KeyboardAvoidingView
+        style={{ flex: 1 }}
+        behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+        keyboardVerticalOffset={Platform.OS === 'ios' ? 0 : 20}
+      >
+        <StatusBar style="auto" />
+        {/* <SafeAreaView className='bg-background h-full flex justify-center' > */}
+        <ScrollView
+          contentContainerStyle={{ flexGrow: 1, justifyContent: 'center' }}
+          keyboardShouldPersistTaps="handled"
+          className="px-5"
+        >
+          <View className=' bg-background h-full w-full flex justify-center' >
+            <Image
+              source={require('../../assets/photos/bookImage1.png')}
+              style={{ width: "auto", height: 200 }}
+              resizeMode="cover"
+            />
 
-    <KeyboardAvoidingView
-      style={{ flex: 1 }}
-      behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
-      keyboardVerticalOffset={Platform.OS === 'ios' ? 0 : 20}
-    >
-      <StatusBar style="auto" />
-      <SafeAreaView className='bg-background h-full flex justify-center' >
-        {/* <Text className="text-red-400 font-bold bg-primary">Hello Pradeep!</Text> */}
-        <View className='h-[65vh]' >
-          <Image
-            source={require('../../assets/photos/bookImage1.png')}
-            style={{ width: "auto", height: 200 }}
-            resizeMode="cover"
-          />
-
-          <View className=' bg-cardBackground m-10 shadow-lg p-5 rounded-2xl  ' >
-            <View>
-              <Text className="text-textDark font-bold text-lg mb-3">Email</Text>
-              <View className="flex relative flex-row items-center border border-border bg-[#f0f8ff] p-1 rounded-lg mb-3">
-                <MaterialCommunityIcons name="email-outline" size={18} color="#1a4971" />
-                <TextInput
-                  placeholder="Email"
-                  value={email}
-                  onChangeText={setEmail}
-                  keyboardType="email-address"
-                  placeholderTextColor="#767676"
-                  className="bg-[#f0f8ff] text-[#767676]  flex-1 p-2  rounded-lg"
-                />
-              </View>
-            </View>
-            <View>
-              <Text className="text-textDark font-bold text-lg mb-3">Password</Text>
-              <View className="flex relative flex-row items-center  border border-border bg-[#f0f8ff] p-1 rounded-lg mb-3">
-                <MaterialCommunityIcons name="lock-outline" size={18} color="#1a4971" />
-                <TextInput
-                  placeholder="Password"
-                  value={password}
-                  onChangeText={setPassword}
-                  secureTextEntry={!showPassword}
-                  placeholderTextColor="#767676"
-                  className="bg-[#f0f8ff] text-[#767676]  p-2 flex-1 rounded-lg"
-                />
-                <Pressable
-                  onPress={() => setShowPassword(!showPassword)}
-                  className="absolute right-3"
-                >
-                  <MaterialCommunityIcons
-                    name={showPassword ? "eye-off" : "eye"}
-                    size={18}
-                    color="#1a4971"
+            <View className=' bg-cardBackground m-1 shadow-lg p-5 rounded-2xl  ' >
+              <View>
+                <Text className="text-textDark font-bold text-lg mb-3">Email</Text>
+                <View className="flex relative flex-row items-center border border-border bg-[#f0f8ff] p-1 rounded-lg mb-3">
+                  <MaterialCommunityIcons name="email-outline" size={18} color="#1a4971" />
+                  <TextInput
+                    placeholder="Email"
+                    value={email}
+                    onChangeText={setEmail}
+                    keyboardType="email-address"
+                    placeholderTextColor="#767676"
+                    className="bg-[#f0f8ff] text-[#767676]  flex-1 p-2  rounded-lg"
                   />
-                </Pressable>
+                </View>
               </View>
-            </View>
+              <View>
+                <Text className="text-textDark font-bold text-lg mb-3">Password</Text>
+                <View className="flex relative flex-row items-center  border border-border bg-[#f0f8ff] p-1 rounded-lg mb-3">
+                  <MaterialCommunityIcons name="lock-outline" size={18} color="#1a4971" />
+                  <TextInput
+                    placeholder="Password"
+                    value={password}
+                    onChangeText={setPassword}
+                    secureTextEntry={!showPassword}
+                    placeholderTextColor="#767676"
+                    className="bg-[#f0f8ff] text-[#767676]  p-2 flex-1 rounded-lg"
+                  />
+                  <Pressable
+                    onPress={() => setShowPassword(!showPassword)}
+                    className="absolute right-3"
+                  >
+                    <MaterialCommunityIcons
+                      name={showPassword ? "eye-off" : "eye"}
+                      size={18}
+                      color="#1a4971"
+                    />
+                  </Pressable>
+                </View>
+              </View>
 
-            <Pressable onPress={handleLogin} className="bg-textSecondary p-3 rounded-lg mt-10 mb-3">
-              {isLoading ? (
-                <FontAwesome6 name="spinner" size={20} color="white" className="animate-spin text-center" />
-              ) : (
-                <Text className="text-white text-center font-bold">Login</Text>
-                // <FontAwesome6 name="arrow-right" size={20} color="white" />
-              )}
-            </Pressable>
-            <View className='flex flex-row gap-2 justify-center items-center'>
-              <Text>Don't have a account ?</Text>
-              <Link href="/(auth)/signup" className="text-textSecondary font-bold text-center">
-                Signup
-              </Link>
+              <Pressable onPress={handleLogin} className="bg-textSecondary p-3 rounded-lg mt-10 mb-3">
+                {isLoading ? (
+                  <FontAwesome6 name="spinner" size={20} color="white" className="animate-spin text-center" />
+                ) : (
+                  <Text className="text-white text-center font-bold">Login</Text>
+                  // <FontAwesome6 name="arrow-right" size={20} color="white" />
+                )}
+              </Pressable>
+              <View className='flex flex-row gap-2 justify-center items-center'>
+                <Text>Don't have a account ?</Text>
+                <Link href="/(auth)/signup" className="text-textSecondary font-bold text-center">
+                  Signup
+                </Link>
 
+              </View>
             </View>
           </View>
-        </View>
-      </SafeAreaView>
-    </KeyboardAvoidingView>
+          {/* </SafeAreaView> */}
+        </ScrollView>
+      </KeyboardAvoidingView>
+    </SafeAreaView>
   )
 }
 

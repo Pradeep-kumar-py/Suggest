@@ -301,7 +301,7 @@ export const useAuthStore = create<AuthState>((set, get) => ({
     getSingleBook: async (bookId: string): Promise<{ success: boolean; message: string; data?: any }> => {
         set({ isLoading: true });
         try {
-            const response = await fetchWithAuth(`${API_BASE_URL}/api/book/getbook/${bookId}`, {
+            const response = await fetch(`${API_BASE_URL}/api/book/getbook/${bookId}`, {
                 method: 'GET',
                 headers: {
                     'Content-Type': 'application/json',

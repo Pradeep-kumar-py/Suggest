@@ -1,5 +1,5 @@
 import { View, Text, Pressable, ScrollView, Alert, ActivityIndicator, Linking } from 'react-native'
-import React, { useEffect, useState } from 'react'
+import React, { useEffect, useState, memo } from 'react'
 import { SafeAreaView } from 'react-native-safe-area-context'
 import { Image } from 'expo-image'
 import { useAuthStore } from '@/store/authStore'
@@ -221,7 +221,7 @@ const Profile = () => {
 
 
 
-  const UserBox = () => {
+  const UserBox = React.memo(() => {
     return (
       <View className="flex justify-between bg-cardBackground p-4 rounded-lg shadow-md mx-5 my-4">
         <View className="flex-row gap-4 items-center">
@@ -243,7 +243,6 @@ const Profile = () => {
                   aspectRatio: 1,
                   borderRadius: 50,
                 }}
-                className="w-12 h-12 rounded-full mr-4"
               />
             )}
           </Pressable>
@@ -258,7 +257,7 @@ const Profile = () => {
         </View>
       </View>
     )
-  }
+  })
 
 
   const renderBookCard = ({ item }: { item: UserBookType }) => {

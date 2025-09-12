@@ -34,24 +34,24 @@ export default function Index() {
   const [showGenreDropdown, setShowGenreDropdown] = useState(false);
   const [isUsingDemoData, setIsUsingDemoData] = useState(false);
 
-const genreOptions = [
-  { label: 'all', value: '' },
-  { label: 'Fiction', value: 'fiction' },
-  { label: 'Non-Fiction', value: 'non-fiction' },
-  { label: 'Technology', value: 'technology' },
-  { label: 'Science', value: 'science' },
-  { label: 'Biography', value: 'biography' },
-  { label: 'History', value: 'history' },
-  { label: 'Self-Help', value: 'self-help' },
-  { label: 'Business', value: 'business' },
-  { label: 'Programming', value: 'programming' },
-  { label: 'Design', value: 'design' },
-  { label: 'Cooking', value: 'cooking' },
-  { label: 'Travel', value: 'travel' },
-  { label: 'Health', value: 'health' },
-  { label: 'Philosophy', value: 'philosophy' },
-  { label: 'Education', value: 'education' }
-];
+  const genreOptions = [
+    { label: 'all', value: '' },
+    { label: 'Fiction', value: 'fiction' },
+    { label: 'Non-Fiction', value: 'non-fiction' },
+    { label: 'Technology', value: 'technology' },
+    { label: 'Science', value: 'science' },
+    { label: 'Biography', value: 'biography' },
+    { label: 'History', value: 'history' },
+    { label: 'Self-Help', value: 'self-help' },
+    { label: 'Business', value: 'business' },
+    { label: 'Programming', value: 'programming' },
+    { label: 'Design', value: 'design' },
+    { label: 'Cooking', value: 'cooking' },
+    { label: 'Travel', value: 'travel' },
+    { label: 'Health', value: 'health' },
+    { label: 'Philosophy', value: 'philosophy' },
+    { label: 'Education', value: 'education' }
+  ];
 
 
   // console.log("Books: ", Books)
@@ -92,7 +92,7 @@ const genreOptions = [
           setHasMore(false); // No more pages for demo
           setIsUsingDemoData(true); // Indicate demo data is in use
           setIsInitialLoading(false);
-        }else{
+        } else {
           Alert.alert("Error", "No books found for the selected genre. Showing demo data instead.");
           setBooks(categorizedDemoBooks.filter(book => book.genre.toLowerCase() === selectedGenre.toLowerCase()));
           setHasMore(false); // No more pages for demo
@@ -268,16 +268,33 @@ const genreOptions = [
 
   const ListEmpty = React.memo(() => (
     <View className="flex-1 items-center justify-center p-8">
-      <Ionicons name="book-outline" size={64} color="#6d93b8" />
-      <Text className="text-textPrimary text-2xl font-bold mt-4">No books found</Text>
-      <Text className="text-placeholderText text-center mt-2">
-        Be the first to recommend a book or pull down to refresh
-      </Text>
-      <View className="mt-6 border border-cardBackground rounded-lg p-4 bg-cardBackground/10">
-        <Text className="text-textDark text-center italic">
-          "The more that you read, the more things you will know. The more that you learn, the more places you'll go." - Dr. Seuss
-        </Text>
-      </View>
+      {selectedTab === 'post' ? (
+        <>
+          <Ionicons name="create-outline" size={64} color="#2563eb" />
+          <Text className="text-textPrimary text-2xl font-bold mt-4">No posts found</Text>
+          <Text className="text-placeholderText text-center mt-2">
+            Be the first to share a book recommendation or pull down to refresh
+          </Text>
+          <View className="mt-6 border border-blue-200 rounded-lg p-4 bg-blue-100/30">
+            <Text className="text-textDark text-center italic">
+              "A reader lives a thousand lives before he dies. The man who never reads lives only one." - George R.R. Martin
+            </Text>
+          </View>
+        </>
+      ) : (
+        <>
+          <Ionicons name="videocam-outline" size={64} color="#7c3aed" />
+          <Text className="text-textPrimary text-2xl font-bold mt-4">No videos found</Text>
+          <Text className="text-placeholderText text-center mt-2">
+            Be the first to share a book review video or pull down to refresh
+          </Text>
+          <View className="mt-6 border border-purple-200 rounded-lg p-4 bg-purple-100/30">
+            <Text className="text-textDark text-center italic">
+              "Today a reader, tomorrow a leader." - Margaret Fuller
+            </Text>
+          </View>
+        </>
+      )}
     </View>
   ));
 
