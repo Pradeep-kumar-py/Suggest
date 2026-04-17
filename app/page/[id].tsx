@@ -45,19 +45,24 @@ const ComponentPage = () => {
         setSummaryLoading(true)
         setSummaryError(null)
         try {
-            const response = await fetch(`${FASTAPI_URI}/process-image`, {
+            const response = await fetch(`${FASTAPI_URI}`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
                 },
-                body: JSON.stringify({ title: SingleBook?.title, image_url: SingleBook?.image }),
+                body: JSON.stringify({ title: SingleBook?.title, description: SingleBook?.caption }),
             })
 
-            const data = await response.json()
-            // console.log(data);
+            const textData = await response.text();
+            let data;
+            try {
+                data = JSON.parse(textData);
+            } catch (e) {
+                throw new Error(textData || "An unknown error occurred");
+            }
 
             if (!response.ok) {
-                throw new Error(data.message);
+                throw new Error(data.error || data.message || "An unknown error occurred");
             }
             setSummaryLoading(false)
             if (data.summary) {
