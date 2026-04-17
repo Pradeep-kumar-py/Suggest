@@ -7,12 +7,10 @@ import { Image } from 'expo-image'
 import { useAuthStore } from '@/store/authStore';
 import { clearSecureStore } from '@/utils/secureStore';
 import { StatusBar } from 'expo-status-bar';
-import { MotiPressable } from 'moti/interactions'
 import { AnimatedButton } from '@/Component/AnimatedButton';
 import { useVideoPlayer, VideoView } from 'expo-video';
 import { useEvent } from 'expo';
 import { Picker } from '@react-native-picker/picker';
-import { Background } from '@react-navigation/elements';
 
 
 const Upload = () => {
@@ -125,8 +123,11 @@ const Upload = () => {
   const videoSource = selectedMediaUri || '';
 
   const player = useVideoPlayer(videoSource, (player) => {
-    player.loop = true; // Loop the video
-    player.play(); // Start playing the video immediately
+    player.loop = true;
+    // Only play if there is an actual source
+    if (videoSource) {
+      player.play();
+    }
   })
 
 

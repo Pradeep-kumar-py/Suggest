@@ -164,28 +164,20 @@ export default function Index() {
   };
 
   const loadMoreBooks = async () => {
-    if (!hasMore || isLoading || isLoadingMore) return // Prevent loading more if there are no more books
+    if (!hasMore || isLoading || isLoadingMore) return
 
     setisLoadingMore(true)
     try {
-      const nextPage = pageNo + 1 // Increment the page number
+      const nextPage = pageNo + 1
 
       const result = await fetchAllBooks(nextPage, limit, selectedGenre)
-      console.log("Result from load more books: ", result)
       if (result.success) {
         const categorizedBooks = categorizeBooks(result.data.books);
-        setBooks(prevBooks => [...prevBooks, ...categorizedBooks]) // Append new books to the existing list
-        setPageNo(nextPage) // Update the page number
-        setHasMore(nextPage < result.data.totalPages) // Check if there are more pages
-      } else {
-        console.log("Error fetching books: ", result.message)
-        // Alert.alert("Error", "Failed to load more books")
+        setBooks(prevBooks => [...prevBooks, ...categorizedBooks])
+        setPageNo(nextPage)
+        setHasMore(nextPage < result.data.totalPages)
       }
-
-      console.log("pageNo inside the try block cheaking if it has increased or not: ", pageNo) // Check if there are more books to load
-
     } catch (error) {
-      console.log("Error fetching books: ", error)
       Alert.alert("Error", "Failed to load more books")
     } finally {
       setisLoadingMore(false)
@@ -405,7 +397,6 @@ export default function Index() {
               contentContainerStyle={{ paddingBottom: 16 }}
               onRefresh={handleRefresh}
               refreshing={isRefreshing}
-              removeClippedSubviews={true}
               ListFooterComponent={isLoadingMore ? LoadingFooter : EmptyFooter}
               ListEmptyComponent={ListEmpty}
               ListHeaderComponent={ListHeader}

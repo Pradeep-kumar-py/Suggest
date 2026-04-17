@@ -16,7 +16,6 @@ import { SafeAreaView } from "react-native-safe-area-context";
 import { Image } from "expo-image";
 import { Ionicons } from "@expo/vector-icons";
 import { StatusBar } from "expo-status-bar";
-import { MotiView, MotiText } from "moti";
 import { DeepLinkEvent } from "@/utils/types";
 
 const index = () => {
@@ -81,12 +80,7 @@ const index = () => {
                     showsVerticalScrollIndicator={false}
                 >
                     {/* Hero Section */}
-                    <MotiView
-                        from={{ opacity: 0, translateY: 30 }}
-                        animate={{ opacity: 1, translateY: 0 }}
-                        transition={{ type: "timing", duration: 700 }}
-                        className="items-center pt-8 pb-6"
-                    >
+                    <View className="items-center pt-8 pb-6">
                         <Image
                             source={require("../assets/photos/bookimg.jpeg")}
                             className="w-44 h-44 rounded-3xl mb-6 border-2 border-blue-300"
@@ -101,33 +95,13 @@ const index = () => {
                             Discover amazing books through real video reviews, AI summaries,
                             and community recommendations
                         </Text>
-                    </MotiView>
+                    </View>
 
                     {/* Live Features Showcase */}
-                    <MotiView
-                        from={{ opacity: 0, scale: 0.9 }}
-                        animate={{ opacity: 1, scale: 1 }}
-                        transition={{ delay: 300, duration: 600 }}
-                        className="mb-8"
-                    >
-                        {/* <View className="bg-green-50 border border-green-200 rounded-2xl p-4 mb-6">
-                            <View className="flex-row items-center justify-center mb-2">
-                                <View className="w-2 h-2 bg-green-500 rounded-full mr-2 animate-pulse" />
-                                <Text className="text-green-700 font-semibold">Live & Functional</Text>
-                            </View>
-                            <Text className="text-green-600 text-center text-sm">
-                                All features are fully working - no placeholders or external redirects
-                            </Text>
-                        </View> */}
-
+                    <View className="mb-8">
                         {/* Feature Grid */}
                         <View className="flex-row flex-wrap justify-between">
-                            <MotiView
-                                from={{ opacity: 0, translateX: -20 }}
-                                animate={{ opacity: 1, translateX: 0 }}
-                                transition={{ delay: 400, duration: 500 }}
-                                className="w-[48%] bg-white rounded-2xl p-4 mb-4 shadow-sm border border-gray-100"
-                            >
+                            <View className="w-[48%] bg-white rounded-2xl p-4 mb-4 shadow-sm border border-gray-100">
                                 <View className="items-center">
                                     <View className="bg-blue-100 p-3 rounded-full mb-3">
                                         <Ionicons name="videocam" size={24} color="#1976d2" />
@@ -137,14 +111,9 @@ const index = () => {
                                         Upload & watch book reviews
                                     </Text>
                                 </View>
-                            </MotiView>
+                            </View>
 
-                            <MotiView
-                                from={{ opacity: 0, translateX: 20 }}
-                                animate={{ opacity: 1, translateX: 0 }}
-                                transition={{ delay: 500, duration: 500 }}
-                                className="w-[48%] bg-white rounded-2xl p-4 mb-4 shadow-sm border border-gray-100"
-                            >
+                            <View className="w-[48%] bg-white rounded-2xl p-4 mb-4 shadow-sm border border-gray-100">
                                 <View className="items-center">
                                     <View className="bg-purple-100 p-3 rounded-full mb-3">
                                         <Ionicons name="sparkles" size={24} color="#7C3AED" />
@@ -154,14 +123,9 @@ const index = () => {
                                         Get instant book insights
                                     </Text>
                                 </View>
-                            </MotiView>
+                            </View>
 
-                            <MotiView
-                                from={{ opacity: 0, translateX: -20 }}
-                                animate={{ opacity: 1, translateX: 0 }}
-                                transition={{ delay: 600, duration: 500 }}
-                                className="w-[48%] bg-white rounded-2xl p-4 mb-4 shadow-sm border border-gray-100"
-                            >
+                            <View className="w-[48%] bg-white rounded-2xl p-4 mb-4 shadow-sm border border-gray-100">
                                 <View className="items-center">
                                     <View className="bg-orange-100 p-3 rounded-full mb-3">
                                         <Ionicons name="camera" size={24} color="#EA580C" />
@@ -171,14 +135,9 @@ const index = () => {
                                         Share book covers & notes
                                     </Text>
                                 </View>
-                            </MotiView>
+                            </View>
 
-                            <MotiView
-                                from={{ opacity: 0, translateX: 20 }}
-                                animate={{ opacity: 1, translateX: 0 }}
-                                transition={{ delay: 700, duration: 500 }}
-                                className="w-[48%] bg-white rounded-2xl p-4 mb-4 shadow-sm border border-gray-100"
-                            >
+                            <View className="w-[48%] bg-white rounded-2xl p-4 mb-4 shadow-sm border border-gray-100">
                                 <View className="items-center">
                                     <View className="bg-green-100 p-3 rounded-full mb-3">
                                         <Ionicons name="book" size={24} color="#16A34A" />
@@ -188,43 +147,12 @@ const index = () => {
                                         Explore thousands of titles
                                     </Text>
                                 </View>
-                            </MotiView>
-                        </View>
-                    </MotiView>
-
-                    {/* Statistics */}
-                    {/* <MotiView
-                        from={{ opacity: 0, translateY: 20 }}
-                        animate={{ opacity: 1, translateY: 0 }}
-                        transition={{ delay: 800, duration: 600 }}
-                        className="bg-blue-600 rounded-2xl p-6 mb-8"
-                    >
-                        <Text className="text-white text-xl font-bold text-center mb-4">
-                            Join Our Active Community
-                        </Text>
-                        <View className="flex-row justify-around">
-                            <View className="items-center">
-                                <Text className="text-white text-2xl font-bold">10K+</Text>
-                                <Text className="text-blue-100 text-sm">Books</Text>
-                            </View>
-                            <View className="items-center">
-                                <Text className="text-white text-2xl font-bold">5K+</Text>
-                                <Text className="text-blue-100 text-sm">Reviews</Text>
-                            </View>
-                            <View className="items-center">
-                                <Text className="text-white text-2xl font-bold">1K+</Text>
-                                <Text className="text-blue-100 text-sm">Users</Text>
                             </View>
                         </View>
-                    </MotiView> */}
+                    </View>
 
                     {/* CTA Buttons */}
-                    <MotiView
-                        from={{ opacity: 0, scale: 0.8 }}
-                        animate={{ opacity: 1, scale: 1 }}
-                        transition={{ delay: 900, duration: 800 }}
-                        className="flex gap-4 mb-6"
-                    >
+                    <View className="flex gap-4 mb-6">
                         <Link href="/(tabs)" asChild>
                             <Pressable className="bg-blue-600 px-8 py-4 rounded-2xl shadow-lg flex-row items-center justify-center active:opacity-90 active:scale-98">
                                 <Ionicons name="book-outline" size={22} color="#fff" />
@@ -242,15 +170,10 @@ const index = () => {
                             </Pressable>
                         </Link>
 
-                    </MotiView>
+                    </View>
 
                     {/* Feature Highlights */}
-                    <MotiView
-                        from={{ opacity: 0 }}
-                        animate={{ opacity: 1 }}
-                        transition={{ delay: 1000, duration: 800 }}
-                        className="bg-gray-50 rounded-2xl p-6 mb-8"
-                    >
+                    <View className="bg-gray-50 rounded-2xl p-6 mb-8">
                         <Text className="text-gray-800 font-semibold text-center mb-4">
                             What Makes Us Different?
                         </Text>
@@ -281,20 +204,15 @@ const index = () => {
                                 </Text>
                             </View>
                         </View>
-                    </MotiView>
+                    </View>
 
                     {/* Quote */}
-                    <MotiText
-                        from={{ opacity: 0 }}
-                        animate={{ opacity: 1 }}
-                        transition={{ delay: 1100, duration: 800 }}
-                        className="text-gray-500 text-center italic px-3 pb-8"
-                    >
+                    <Text className="text-gray-500 text-center italic px-3 pb-8">
                         "Create video reviews, and help others discover
                         amazing books and courses. Your next recommendation could change
                         someone's life!"
                         {"\n"}✨ Rate • Review • Recommend
-                    </MotiText>
+                    </Text>
                 </ScrollView>
             </SafeAreaView>
         </>

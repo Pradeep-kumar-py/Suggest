@@ -1,18 +1,15 @@
-import { MotiPressable } from 'moti/interactions';
-import { Text } from 'react-native';
+import { Pressable, Text } from 'react-native';
 import { FontAwesome6 } from '@expo/vector-icons';
+import { useState } from 'react';
 
 export function AnimatedButton({ handleSubmit, isLoading }: { handleSubmit: () => void; isLoading: boolean }) {
+    const [pressed, setPressed] = useState(false);
+
     return (
-        <MotiPressable
+        <Pressable
             onPress={handleSubmit}
-            // Add the worklet directive to the animate function
-            animate={({ pressed }) => {
-                'worklet';
-                return {
-                    scale: pressed ? 0.9 : 1
-                };
-            }}     
+            onPressIn={() => setPressed(true)}
+            onPressOut={() => setPressed(false)}
             style={{
                 backgroundColor: '#3b82f6',
                 paddingVertical: 12,
@@ -22,7 +19,7 @@ export function AnimatedButton({ handleSubmit, isLoading }: { handleSubmit: () =
                 justifyContent: 'center',
                 marginTop: 2,
                 marginBottom: 2,
-                
+                opacity: pressed ? 0.85 : 1,
             }}
         >
             {isLoading ? (
@@ -30,6 +27,6 @@ export function AnimatedButton({ handleSubmit, isLoading }: { handleSubmit: () =
             ) : (
                 <Text style={{ color: 'white', textAlign: 'center' }}>Add book or course</Text>
             )}
-        </MotiPressable>
+        </Pressable>
     );
 }
