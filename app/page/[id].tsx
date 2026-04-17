@@ -80,7 +80,10 @@ const ComponentPage = () => {
     const speakSummary = () => {
         if (summary) {
             setPlay(true);
-            Speech.speak(summary, {
+            // Clean markdown artifacts like asterisks and hashes for TTS
+            const textToSpeak = summary.replace(/[*#_]/g, '').trim();
+            
+            Speech.speak(textToSpeak, {
                 language: 'en', // Adjust language as needed
                 pitch: .9,
                 rate: .9,
