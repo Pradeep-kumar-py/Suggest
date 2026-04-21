@@ -33,6 +33,8 @@ interface AuthState {
     uploadProfileImage: (formData: FormData) => Promise<{ success: boolean; message: string; data?: any }>;
     deleteBook: (bookId: string) => Promise<{ success: boolean; message: string; data?: any }>;
     getSingleBook: (bookId: string) => Promise<{ success: boolean; message: string; data?: any }>;
+    rateBook: (bookId: string, rating: number) => Promise<{ success: boolean; message: string; data?: any }>;
+    getUserRating: (bookId: string) => Promise<{ success: boolean; message: string; data?: any }>;
 
 }
 
@@ -322,12 +324,52 @@ export const useAuthStore = create<AuthState>((set, get) => ({
             set({ isLoading: false });
             return { success: false, message: 'Error fetching book' };
         }
-    }
+    },
 
+    rateBook: async (bookId: string, rating: number): Promise<{ success: boolean; message: string; data?: any }> => {
+        try {
+            const response = await fetchWithAuth(`${API_BASE_URL}/api/book/rate/${bookId}`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ rating }),
+            });
 
+            const data = await response.json();
 
+            if (!response.ok) {
+                throw new Error(data.message);
+            }
 
+            return { success: true, message: 'Book rated successfully', data };
+        } catch (error) {
+            console.error('Error rating book:', error);
+            return { success: false, message: 'Error rating book' };
+        }
+    },
 
+    getUserRating: async (bookId: string): Promise<{ success: boolean; message: string; data?: any }> => {
+        try {
+            const response = await fetchWithAuth(`${API_BASE_URL}/api/book/rate/${bookId}`, {
+                method: 'GET',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+            });
+
+            const data = await response.json();
+
+            if (!response.ok) {
+                throw new Error(data.message);
+            }
+
+            return { success: true, message: 'Rating fetched successfully', data };
+        } catch (error) {
+            console.error('Error fetching user rating:', error);
+            return { success: false, message: 'Error fetching user rating' };
+        }
+    },
 
 }));
 

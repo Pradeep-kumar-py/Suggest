@@ -39,12 +39,13 @@ export interface BookType {
     title: string,
     caption: string,
     image: string,
-    rating: string,
-    user?:UserType,
+    rating: string | number,
+    ratingCount?: number,
+    user?: UserType,
     link: string,
     createdAt: string,
     genre: string
-    mediaType?: 'post' | 'video'; // Add this line
+    mediaType?: 'post' | 'video';
 }
 
 export type DeepLinkEvent = {
